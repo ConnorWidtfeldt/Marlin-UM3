@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "rea": {
+    "requested": true,
+    "native_open_result": "provider_unavailable",
+    "reason": "The registered adapter rejected Ghidra 12.2; its configured Java 21 also did not satisfy that Ghidra release.",
+    "configuration_changed": false,
+    "evidence_ids": []
+  },
+  "fallback": {
+    "tool": "Installed Ghidra 12.2 headless",
+    "java": "Installed OpenJDK 25.0.5",
+    "authority": "Direct Ghidra/LLVM static analysis and controlled Unicorn 2.1.4 instruction replay; these are not REA Evidence records."
+  },
+  "artifacts": {
+    "simulator_sha256": "bcbf7de08b16ad0c8c38b5a182a1b85ed49c81f87459f088d30fa385587965ee",
+    "avr_hex_sha256": "448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65"
+  },
+  "coverage": {
+    "simulator_functions_exported": 120,
+    "avr_functions_exported": 306,
+    "pid_replay_outputs": 177,
+    "conversion_replay_outputs": 86,
+    "bed_budget_replay_outputs": 12,
+    "removal_replay_outcomes": 12,
+    "watchdog_replay_outcomes": 19
+  },
+  "limitations": [
+    "Decompiled pseudocode is not original source and requires manual interpretation.",
+    "ARM functions have not been automatically matched to AVR functions; temperature tables and ROM defaults are independently corroborated in AVR flash.",
+    "ARM double is 64-bit and AVR double is 32-bit; the ARM replay does not prove exact AVR numerical parity.",
+    "Watchdog replay mocks only the clock and shutdown-call boundaries.",
+    "No physical hardware tests or full firmware qualification."
+  ]
+}

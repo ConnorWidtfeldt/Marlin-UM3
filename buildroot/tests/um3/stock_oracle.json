@@ -1,0 +1,1762 @@
+{
+  "schema_version": 1,
+  "simulator_sha256": "bcbf7de08b16ad0c8c38b5a182a1b85ed49c81f87459f088d30fa385587965ee",
+  "authority": "controlled function replay of shipped ARM instructions; not physical AVR execution",
+  "engine": "Unicorn 2.1.4",
+  "functions": {
+    "pid_constructor": "0x35d10",
+    "pid_update": "0x35dac",
+    "analog2temp_sub": "0x34a80",
+    "bed_budget": "0x36778",
+    "removal_interlock": "0x3443c",
+    "heating_watchdog": "0x344cc"
+  },
+  "notes": [
+    "Watchdog replay mocks only the clock, heater-disable and stop call boundaries.",
+    "ELF load segments mapped without running its entry point or dynamic linker.",
+    "Only selected functions run; debug serial output disabled.",
+    "Control ranges, coefficients and fan byte supplied as explicit fixture inputs.",
+    "ARM double is 64-bit; AVR double is 32-bit, so parity is bounded by architecture."
+  ],
+  "pid_cases": [
+    {
+      "name": "hotend_ramp",
+      "settings": {
+        "target": 210,
+        "kff": 0.57,
+        "kp": 9,
+        "ki": 0.2,
+        "kd": 40,
+        "ki_max": 100,
+        "kpcf": 0.06,
+        "functional_range": 25,
+        "min": 5,
+        "max": 365
+      },
+      "samples": [
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 180,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 181,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 182,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 183,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 184,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 185,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 186,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 187,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 188,
+          "fan": 32,
+          "output": 252
+        },
+        {
+          "temperature": 189,
+          "fan": 32,
+          "output": 231
+        },
+        {
+          "temperature": 190,
+          "fan": 32,
+          "output": 211
+        },
+        {
+          "temperature": 191,
+          "fan": 32,
+          "output": 190
+        },
+        {
+          "temperature": 192,
+          "fan": 128,
+          "output": 176
+        },
+        {
+          "temperature": 193,
+          "fan": 128,
+          "output": 156
+        },
+        {
+          "temperature": 194,
+          "fan": 128,
+          "output": 136
+        },
+        {
+          "temperature": 195,
+          "fan": 128,
+          "output": 116
+        },
+        {
+          "temperature": 196,
+          "fan": 128,
+          "output": 96
+        },
+        {
+          "temperature": 197,
+          "fan": 128,
+          "output": 76
+        },
+        {
+          "temperature": 198,
+          "fan": 128,
+          "output": 56
+        },
+        {
+          "temperature": 199,
+          "fan": 255,
+          "output": 44
+        },
+        {
+          "temperature": 200,
+          "fan": 255,
+          "output": 25
+        },
+        {
+          "temperature": 201,
+          "fan": 255,
+          "output": 6
+        },
+        {
+          "temperature": 202,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 203,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 204,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 205,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 206,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 207,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 208,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 209,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 211,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 212,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 213,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 214,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 215,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 255,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "sample_rejection",
+      "settings": {
+        "target": 200,
+        "kff": 0.57,
+        "kp": 9,
+        "ki": 0.2,
+        "kd": 40,
+        "ki_max": 100,
+        "kpcf": 0.06,
+        "functional_range": 25,
+        "min": 5,
+        "max": 365
+      },
+      "samples": [
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 30,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 31,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 196,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 197,
+          "fan": 0,
+          "output": 108
+        },
+        {
+          "temperature": 198,
+          "fan": 0,
+          "output": 87
+        },
+        {
+          "temperature": 199,
+          "fan": 32,
+          "output": 68
+        },
+        {
+          "temperature": 200,
+          "fan": 32,
+          "output": 47
+        },
+        {
+          "temperature": 201,
+          "fan": 32,
+          "output": 27
+        },
+        {
+          "temperature": 202,
+          "fan": 32,
+          "output": 6
+        },
+        {
+          "temperature": 203,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 204,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 204,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 205,
+          "fan": 128,
+          "output": 26
+        },
+        {
+          "temperature": 200,
+          "fan": 128,
+          "output": 132
+        },
+        {
+          "temperature": 195,
+          "fan": 128,
+          "output": 238
+        }
+      ]
+    },
+    {
+      "name": "bed_ramp",
+      "settings": {
+        "target": 60,
+        "kff": 2.5,
+        "kp": 125,
+        "ki": 0,
+        "kd": 0,
+        "ki_max": 60,
+        "kpcf": 0,
+        "functional_range": 25,
+        "min": 5,
+        "max": 200
+      },
+      "samples": [
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 21,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 22,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 23,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 24,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 25,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 26,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 27,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 28,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 29,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 30,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 31,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 32,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 33,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 34,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 35,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 36,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 37,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 38,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 39,
+          "fan": 128,
+          "output": 255
+        },
+        {
+          "temperature": 40,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 41,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 42,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 43,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 44,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 45,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 46,
+          "fan": 255,
+          "output": 255
+        },
+        {
+          "temperature": 47,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 48,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 49,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 50,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 51,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 52,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 53,
+          "fan": 0,
+          "output": 255
+        },
+        {
+          "temperature": 54,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 55,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 56,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 57,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 58,
+          "fan": 32,
+          "output": 255
+        },
+        {
+          "temperature": 59,
+          "fan": 32,
+          "output": 187
+        },
+        {
+          "temperature": 60,
+          "fan": 32,
+          "output": 62
+        },
+        {
+          "temperature": 61,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 62,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 63,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 64,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 65,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 60,
+          "fan": 128,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 128,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 255,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 255,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 255,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 255,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 255,
+          "output": 62
+        },
+        {
+          "temperature": 60,
+          "fan": 255,
+          "output": 62
+        }
+      ]
+    },
+    {
+      "name": "integral_clamp",
+      "settings": {
+        "target": 100,
+        "kff": 0,
+        "kp": 0,
+        "ki": 2,
+        "kd": 0,
+        "ki_max": 7,
+        "kpcf": 0,
+        "functional_range": 25,
+        "min": 5,
+        "max": 365
+      },
+      "samples": [
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 99,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 128,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 255,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 101,
+          "fan": 0,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "target_off",
+      "settings": {
+        "target": 0,
+        "kff": 0.57,
+        "kp": 9,
+        "ki": 0.2,
+        "kd": 40,
+        "ki_max": 100,
+        "kpcf": 0.06,
+        "functional_range": 25,
+        "min": 5,
+        "max": 365
+      },
+      "samples": [
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 20,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 19,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 18,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 17,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 16,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 15,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 10,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 5,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 0,
+          "fan": 32,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "control_bounds",
+      "settings": {
+        "target": 200,
+        "kff": 0,
+        "kp": 1,
+        "ki": 0,
+        "kd": 0,
+        "ki_max": 100,
+        "kpcf": 0,
+        "functional_range": 25,
+        "min": 190,
+        "max": 205
+      },
+      "samples": [
+        {
+          "temperature": 185,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 185,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 186,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 190,
+          "fan": 0,
+          "output": 10
+        },
+        {
+          "temperature": 195,
+          "fan": 0,
+          "output": 5
+        },
+        {
+          "temperature": 200,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 205,
+          "fan": 0,
+          "output": 0
+        },
+        {
+          "temperature": 206,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 207,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 32,
+          "output": 0
+        },
+        {
+          "temperature": 210,
+          "fan": 32,
+          "output": 0
+        }
+      ]
+    }
+  ],
+  "conversion_cases": [
+    {
+      "kind": "hotend",
+      "raw_sum": -32768,
+      "celsius": -307.3924865722656
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -17448,
+      "celsius": -50.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -15960,
+      "celsius": -25.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -14472,
+      "celsius": 0.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -13052,
+      "celsius": 25.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -11632,
+      "celsius": 50.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -10268,
+      "celsius": 75.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -8904,
+      "celsius": 100.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -7600,
+      "celsius": 125.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -6296,
+      "celsius": 150.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -5048,
+      "celsius": 175.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -3800,
+      "celsius": 200.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -2600,
+      "celsius": 225.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -1400,
+      "celsius": 250.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": -252,
+      "celsius": 275.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 896,
+      "celsius": 300.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 2000,
+      "celsius": 325.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 3104,
+      "celsius": 350.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 4160,
+      "celsius": 375.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 5216,
+      "celsius": 400.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 6232,
+      "celsius": 425.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 7248,
+      "celsius": 450.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 8224,
+      "celsius": 475.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 9200,
+      "celsius": 500.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 12744,
+      "celsius": 600.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 16288,
+      "celsius": 700.0
+    },
+    {
+      "kind": "hotend",
+      "raw_sum": 32767,
+      "celsius": 700.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": -32768,
+      "celsius": -18.044052124023438
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 0,
+      "celsius": 0.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 908,
+      "celsius": 0.5
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 1816,
+      "celsius": 1.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 1888,
+      "celsius": 10.5
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 1960,
+      "celsius": 20.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2028,
+      "celsius": 30.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2096,
+      "celsius": 40.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2164,
+      "celsius": 50.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2232,
+      "celsius": 60.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2296,
+      "celsius": 70.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2360,
+      "celsius": 80.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2428,
+      "celsius": 90.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2496,
+      "celsius": 100.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2564,
+      "celsius": 110.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2632,
+      "celsius": 120.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2696,
+      "celsius": 130.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2760,
+      "celsius": 140.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2824,
+      "celsius": 150.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2888,
+      "celsius": 160.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 2952,
+      "celsius": 170.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3016,
+      "celsius": 180.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3080,
+      "celsius": 190.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3144,
+      "celsius": 200.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3208,
+      "celsius": 210.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3272,
+      "celsius": 220.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3332,
+      "celsius": 230.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3392,
+      "celsius": 240.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3456,
+      "celsius": 250.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3520,
+      "celsius": 260.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3580,
+      "celsius": 270.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3640,
+      "celsius": 280.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3700,
+      "celsius": 290.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3760,
+      "celsius": 300.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3820,
+      "celsius": 310.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3880,
+      "celsius": 320.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 3940,
+      "celsius": 330.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4000,
+      "celsius": 340.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4060,
+      "celsius": 350.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4120,
+      "celsius": 360.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4176,
+      "celsius": 370.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4232,
+      "celsius": 380.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4292,
+      "celsius": 390.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4352,
+      "celsius": 400.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4632,
+      "celsius": 450.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 4912,
+      "celsius": 500.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 5180,
+      "celsius": 550.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 5448,
+      "celsius": 600.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 5700,
+      "celsius": 650.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 5952,
+      "celsius": 700.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 6196,
+      "celsius": 750.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 6440,
+      "celsius": 800.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 6668,
+      "celsius": 850.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 6896,
+      "celsius": 900.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 7116,
+      "celsius": 950.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 7336,
+      "celsius": 1000.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 7540,
+      "celsius": 1050.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 7744,
+      "celsius": 1100.0
+    },
+    {
+      "kind": "bed",
+      "raw_sum": 32767,
+      "celsius": 1100.0
+    }
+  ],
+  "bed_budget_cases": [
+    {
+      "temperature": 0,
+      "remaining_watts": 25,
+      "requested": 255,
+      "output": 32
+    },
+    {
+      "temperature": 0,
+      "remaining_watts": 100,
+      "requested": 255,
+      "output": 130
+    },
+    {
+      "temperature": 0,
+      "remaining_watts": 175,
+      "requested": 255,
+      "output": 227
+    },
+    {
+      "temperature": 20,
+      "remaining_watts": 25,
+      "requested": 255,
+      "output": 35
+    },
+    {
+      "temperature": 20,
+      "remaining_watts": 100,
+      "requested": 255,
+      "output": 141
+    },
+    {
+      "temperature": 20,
+      "remaining_watts": 175,
+      "requested": 255,
+      "output": 246
+    },
+    {
+      "temperature": 60,
+      "remaining_watts": 25,
+      "requested": 255,
+      "output": 40
+    },
+    {
+      "temperature": 60,
+      "remaining_watts": 100,
+      "requested": 255,
+      "output": 162
+    },
+    {
+      "temperature": 60,
+      "remaining_watts": 175,
+      "requested": 255,
+      "output": 255
+    },
+    {
+      "temperature": 115,
+      "remaining_watts": 25,
+      "requested": 255,
+      "output": 48
+    },
+    {
+      "temperature": 115,
+      "remaining_watts": 100,
+      "requested": 255,
+      "output": 192
+    },
+    {
+      "temperature": 115,
+      "remaining_watts": 175,
+      "requested": 255,
+      "output": 255
+    }
+  ],
+  "removal_cases": [
+    {
+      "initial_allowed": false,
+      "requested": true,
+      "temperature": 20,
+      "target": 0,
+      "allowed": true
+    },
+    {
+      "initial_allowed": false,
+      "requested": true,
+      "temperature": 70,
+      "target": 0,
+      "allowed": true
+    },
+    {
+      "initial_allowed": false,
+      "requested": true,
+      "temperature": 70.01,
+      "target": 0,
+      "allowed": false
+    },
+    {
+      "initial_allowed": false,
+      "requested": true,
+      "temperature": 20,
+      "target": 1,
+      "allowed": false
+    },
+    {
+      "initial_allowed": false,
+      "requested": false,
+      "temperature": 200,
+      "target": 210,
+      "allowed": false
+    },
+    {
+      "initial_allowed": false,
+      "requested": false,
+      "temperature": 20,
+      "target": 0,
+      "allowed": false
+    },
+    {
+      "initial_allowed": true,
+      "requested": true,
+      "temperature": 20,
+      "target": 0,
+      "allowed": true
+    },
+    {
+      "initial_allowed": true,
+      "requested": true,
+      "temperature": 70,
+      "target": 0,
+      "allowed": true
+    },
+    {
+      "initial_allowed": true,
+      "requested": true,
+      "temperature": 70.01,
+      "target": 0,
+      "allowed": true
+    },
+    {
+      "initial_allowed": true,
+      "requested": true,
+      "temperature": 20,
+      "target": 1,
+      "allowed": true
+    },
+    {
+      "initial_allowed": true,
+      "requested": false,
+      "temperature": 200,
+      "target": 210,
+      "allowed": false
+    },
+    {
+      "initial_allowed": true,
+      "requested": false,
+      "temperature": 20,
+      "target": 0,
+      "allowed": false
+    }
+  ],
+  "watchdog_cases": [
+    {
+      "name": "deadline_exact",
+      "samples": [
+        {
+          "temperature": 20,
+          "now_ms": 100,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 21,
+          "now_ms": 30100,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 21,
+          "now_ms": 30101,
+          "pwm": 255,
+          "fault": true,
+          "stop_reason": 4
+        }
+      ]
+    },
+    {
+      "name": "progress",
+      "samples": [
+        {
+          "temperature": 20,
+          "now_ms": 100,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 21.001,
+          "now_ms": 20000,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 21.5,
+          "now_ms": 50000,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 21.5,
+          "now_ms": 50001,
+          "pwm": 255,
+          "fault": true,
+          "stop_reason": 4
+        }
+      ]
+    },
+    {
+      "name": "partial_output_reset",
+      "samples": [
+        {
+          "temperature": 20,
+          "now_ms": 100,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 30099,
+          "pwm": 254,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 60000,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 90000,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 90001,
+          "pwm": 255,
+          "fault": true,
+          "stop_reason": 4
+        }
+      ]
+    },
+    {
+      "name": "zero_sentinel",
+      "samples": [
+        {
+          "temperature": 20,
+          "now_ms": 0,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 30001,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 60001,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 60002,
+          "pwm": 255,
+          "fault": true,
+          "stop_reason": 4
+        }
+      ]
+    },
+    {
+      "name": "clock_wrap",
+      "samples": [
+        {
+          "temperature": 20,
+          "now_ms": 4294967200,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 29904,
+          "pwm": 255,
+          "fault": false,
+          "stop_reason": null
+        },
+        {
+          "temperature": 20,
+          "now_ms": 29905,
+          "pwm": 255,
+          "fault": true,
+          "stop_reason": 4
+        }
+      ]
+    }
+  ]
+}
