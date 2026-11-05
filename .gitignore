@@ -20,6 +20,9 @@
 #
 
 # Generated files
+.pio-core/
+artifacts/
+.venv-um3/
 _Version.h
 bdf2u8g.exe
 genpages.exe

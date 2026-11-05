@@ -1,0 +1,40 @@
+name: UM3 development checks
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  offline-checks:
+    runs-on: ubuntu-24.04
+    env:
+      PLATFORMIO_CORE_DIR: ${{ github.workspace }}/.pio-core
+      PLATFORMIO_SETTING_ENABLE_TELEMETRY: 'no'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r buildroot/share/ultimaker3/requirements.txt
+      - run: python buildroot/tests/um3/test_evidence.py
+      - run: python buildroot/tests/um3/run.py
+      - run: pio run -e um3_upstream_check
+      - run: python buildroot/share/ultimaker3/verify.py avr-protocol --core "$PLATFORMIO_CORE_DIR"
+      - name: Confirm incomplete hardware target cannot emit firmware
+        shell: bash
+        run: |
+          if pio run -e um3_extended > um3-gate.log 2>&1; then
+            cat um3-gate.log
+            echo 'Incomplete UM3 target unexpectedly built'
+            exit 1
+          fi
+          cat um3-gate.log
+          grep -q UM3_RELEASE_BLOCKED um3-gate.log
+          test ! -f .pio/build/um3_extended/firmware.hex
+      - run: python buildroot/share/ultimaker3/verify.py build-report --core "$PLATFORMIO_CORE_DIR" --environment um3_upstream_check --output artifacts/upstream-avr-regression
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: upstream-avr-regression-NOT-UM3-FIRMWARE
+          path: artifacts/upstream-avr-regression
+          if-no-files-found: error
