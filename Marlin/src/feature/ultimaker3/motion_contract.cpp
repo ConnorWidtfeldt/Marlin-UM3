@@ -42,6 +42,40 @@ bool tool_offset_steps(const float millimeters, const float steps_per_mm, int32_
   return true;
 }
 
+float junction_speed(const float current[4],const float previous[4],float nominal,
+                     float previous_nominal,uint8_t queued,float xyjerk,float zjerk,float ejerk) {
+  float speed=xyjerk/2;
+  if(fabsf(current[2])>zjerk/2 && zjerk/2<speed) speed=zjerk/2;
+  if(fabsf(current[3])>ejerk/2 && ejerk/2<speed) speed=ejerk/2;
+  if(nominal<speed) speed=nominal;
+  if(queued>1 && previous_nominal>0.0001f) {
+    float factor=1;
+    const float xy=hypotf(current[0]-previous[0],current[1]-previous[1]);
+    const float z=fabsf(current[2]-previous[2]), e=fabsf(current[3]-previous[3]);
+    if(xy>xyjerk) factor=xyjerk/xy;
+    if(z>zjerk && zjerk/z<factor) factor=zjerk/z;
+    if(e>ejerk && ejerk/e<factor) factor=ejerk/e;
+    speed=nominal*factor;
+    if(previous_nominal<speed) speed=previous_nominal;
+  }
+  return speed;
+}
+
+bool physical_target_steps(const float logical[4],const int32_t tool_offset[3],
+                           const float steps_per_mm[4],int32_t physical[4]) {
+  int32_t result[4];
+  for(uint8_t a=0;a<4;a++) {
+    const float scaled=logical[a]*steps_per_mm[a];
+    if(!isfinite(logical[a]) || !isfinite(steps_per_mm[a]) || steps_per_mm[a]<=0
+       || !isfinite(scaled) || scaled < -2147483648.0f || scaled >= 2147483648.0f) return false;
+    const int64_t value=(a<3 ? int64_t(lround(scaled)) : int64_t(scaled))-(a<3 ? tool_offset[a] : 0);
+    if(value<INT32_MIN || value>INT32_MAX) return false;
+    result[a]=int32_t(value);
+  }
+  memcpy(physical,result,sizeof(result));
+  return true;
+}
+
 bool logical_position_from_steps(const int32_t physical_steps[4], const int32_t tool_offset[3],
                                  const float steps_per_mm[4], float logical_position[4]) {
   float result[4];

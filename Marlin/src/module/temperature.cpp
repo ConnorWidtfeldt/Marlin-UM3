@@ -33,6 +33,9 @@
 #include "../gcode/gcode.h"
 
 #include "temperature.h"
+#if ENABLED(UM3_COMPATIBILITY)
+  #include "../feature/ultimaker3/native_api.h"
+#endif
 #include "endstops.h"
 #include "planner.h"
 #include "printcounter.h"
@@ -1290,6 +1293,13 @@ inline void loud_kill(FSTR_P const lcd_msg, const heater_id_t heater_id) {
 }
 
 void Temperature::_temp_error(const heater_id_t heater_id, FSTR_P const serial_msg, FSTR_P const lcd_msg) {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_stop(heater_id==H_BED ? 3 : 4+uint8_t(heater_id)*50);
+    SERIAL_ECHOPGM("LOG:Marlin thermal protection: ");
+    SERIAL_ECHOLNF(serial_msg);
+    return;
+  #endif
+
 
   static uint8_t killed = 0;
 
@@ -1346,6 +1356,11 @@ void Temperature::_temp_error(const heater_id_t heater_id, FSTR_P const serial_m
 }
 
 void Temperature::maxtemp_error(const heater_id_t heater_id) {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_stop(heater_id==H_BED ? 3 : 1+50*uint8_t(heater_id));
+    return;
+  #endif
+
   #if HAS_DWIN_E3V2_BASIC && (HAS_HOTEND || HAS_HEATED_BED)
     DWIN_Popup_Temperature(1);
   #endif
@@ -1353,6 +1368,11 @@ void Temperature::maxtemp_error(const heater_id_t heater_id) {
 }
 
 void Temperature::mintemp_error(const heater_id_t heater_id) {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_stop(heater_id==H_BED ? 3 : 2+50*uint8_t(heater_id));
+    return;
+  #endif
+
   #if HAS_DWIN_E3V2_BASIC && (HAS_HOTEND || HAS_HEATED_BED)
     DWIN_Popup_Temperature(0);
   #endif
@@ -1553,8 +1573,14 @@ void Temperature::mintemp_error(const heater_id_t heater_id) {
 
 #if HAS_HOTEND
 
+  #if ENABLED(UM3_COMPATIBILITY)
+    static bool um3_removal_allowed[2]={true,true};
+  #endif
   void Temperature::manage_hotends(const millis_t &ms) {
     HOTEND_LOOP() {
+      #if ENABLED(UM3_COMPATIBILITY)
+        if(um3_removal_allowed[e]) { temp_hotend[e].soft_pwm_amount=0; continue; }
+      #endif
       #if ENABLED(THERMAL_PROTECTION_HOTENDS)
         if (degHotend(e) > temp_range[e].maxtemp) maxtemp_error((heater_id_t)e);
       #endif
@@ -1864,6 +1890,11 @@ void Temperature::mintemp_error(const heater_id_t heater_id) {
  *  - Update the heated bed PID output value
  */
 void Temperature::task() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_thermal_task();
+    return;
+  #endif
+
   if (marlin_state == MF_INITIALIZING) return hal.watchdog_refresh(); // If Marlin isn't started, at least reset the watchdog!
 
   static bool no_reentry = false;  // Prevent recursion
@@ -2998,6 +3029,10 @@ void Temperature::init() {
 #endif // HAS_THERMAL_PROTECTION
 
 void Temperature::disable_all_heaters() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_disable_heaters();
+  #endif
+
 
   // Disable autotemp, unpause and reset everything
   TERN_(AUTOTEMP, planner.autotemp_enabled = false);
@@ -3468,6 +3503,7 @@ void Temperature::readings_ready() {
  *  - For ENDSTOP_INTERRUPTS_FEATURE check endstops if flagged
  *  - Call planner.isr to count down its "ignore" time
  */
+#if DISABLED(UM3_COMPATIBILITY)
 HAL_TEMP_TIMER_ISR() {
   HAL_timer_isr_prologue(MF_TIMER_TEMP);
 
@@ -3475,6 +3511,7 @@ HAL_TEMP_TIMER_ISR() {
 
   HAL_timer_isr_epilogue(MF_TIMER_TEMP);
 }
+#endif
 
 #if ENABLED(SLOW_PWM_HEATERS) && !defined(MIN_STATE_TIME)
   #define MIN_STATE_TIME 16 // MIN_STATE_TIME * 65.5 = time in milliseconds
@@ -4722,3 +4759,38 @@ void Temperature::isr() {
   #endif // HAS_COOLER
 
 #endif // HAS_TEMP_SENSOR
+
+#if ENABLED(UM3_COMPATIBILITY)
+void Temperature::um3_reset() {
+  disable_all_heaters();
+  for(uint8_t i=0;i<NR_HEATER_RUNAWAY;i++) {
+    tr_state_machine[i].state=TRInactive;
+    tr_state_machine[i].timer=0;
+    tr_state_machine[i].running_temp=0;
+  }
+}
+void Temperature::um3_sample(const float *values,const float *targets,const bool *allow_removal,float bed,float bed_target) {
+  if(um3_stock_is_stopped()) return;
+  for(uint8_t e=0;e<2;e++) {
+    if(!isfinite(targets[e]) || targets[e]>365) { um3_stock_stop(4+50*e); return; }
+  }
+  if(!isfinite(bed_target) || bed_target>200) { um3_stock_stop(3); return; }
+  for(uint8_t e=0;e<2;e++) {
+    um3_removal_allowed[e]=allow_removal[e];
+    temp_hotend[e].celsius=values[e];
+    temp_range[e].mintemp=5;
+    temp_range[e].maxtemp=365;
+    const celsius_t target=allow_removal[e] || targets[e]<=0 ? 0 : targets[e];
+    if(temp_hotend[e].target!=target) setTargetHotend(target,e);
+    if(!allow_removal[e] && !isfinite(values[e])) um3_stock_stop(2+50*e);
+  }
+  temp_bed.celsius=bed;
+  if(temp_bed.target!=celsius_t(_MAX(0,bed_target))) setTargetBed(_MAX(0,bed_target));
+  if(!isfinite(bed)) um3_stock_stop(3);
+  manage_hotends(millis());
+  manage_heated_bed(millis());
+}
+extern "C" void um3_native_thermal_sample(const float *v,const float *t,const bool *r,float b,float bt) {
+  Temperature::um3_sample(v,t,r,b,bt);
+}
+#endif

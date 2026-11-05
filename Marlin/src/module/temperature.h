@@ -905,6 +905,10 @@ class Temperature {
      * Call periodically to manage heaters and keep the watchdog fed
      */
     static void task();
+    #if ENABLED(UM3_COMPATIBILITY)
+      static void um3_reset();
+      static void um3_sample(const float *,const float *,const bool *,float,float);
+    #endif
 
     /**
      * Preheating hotends

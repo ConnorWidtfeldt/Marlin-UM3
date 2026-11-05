@@ -579,13 +579,19 @@ void Stepper::disable_all_steppers() {
   TERN_(EXTENSIBLE_UI, ExtUI::onSteppersDisabled());
 }
 
+#if ENABLED(UM3_COMPATIBILITY)
+  extern bool um3_runtime_direction[5];
+  #define UM3_DIRECTION(A) um3_runtime_direction[_AXIS(A)]
+#else
+  #define UM3_DIRECTION(A) INVERT_##A##_DIR
+#endif
 #define SET_STEP_DIR(A)                       \
   if (motor_direction(_AXIS(A))) {            \
-    A##_APPLY_DIR(INVERT_##A##_DIR, false);   \
+    A##_APPLY_DIR(UM3_DIRECTION(A), false);   \
     count_direction[_AXIS(A)] = -1;           \
   }                                           \
   else {                                      \
-    A##_APPLY_DIR(!INVERT_##A##_DIR, false);  \
+    A##_APPLY_DIR(!UM3_DIRECTION(A), false);  \
     count_direction[_AXIS(A)] = 1;            \
   }
 
@@ -610,7 +616,13 @@ void Stepper::apply_directions() {
   TERN_(HAS_V_DIR, SET_STEP_DIR(V));
   TERN_(HAS_W_DIR, SET_STEP_DIR(W));
 
-  #if ENABLED(MIXING_EXTRUDER)
+  #if ENABLED(UM3_COMPATIBILITY)
+    const bool inverted=um3_runtime_direction[3+stepper_extruder];
+    const bool reverse=motor_direction(E_AXIS);
+    if(stepper_extruder==0) E0_DIR_WRITE(reverse ? inverted : !inverted);
+    else E1_DIR_WRITE(reverse ? inverted : !inverted);
+    count_direction.e=reverse ? -1 : 1;
+  #elif ENABLED(MIXING_EXTRUDER)
      // Because this is valid for the whole block we don't know
      // what E steppers will step. Likely all. Set all.
     if (motor_direction(E_AXIS)) {

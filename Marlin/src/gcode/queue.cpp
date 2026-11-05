@@ -25,6 +25,9 @@
  */
 
 #include "queue.h"
+#if ENABLED(UM3_COMPATIBILITY)
+  #include "../feature/ultimaker3/native_api.h"
+#endif
 GCodeQueue queue;
 
 #include "gcode.h"
@@ -410,6 +413,11 @@ inline bool process_line_done(uint8_t &sis, char (&buff)[MAX_CMD_SIZE], int &ind
  * left on the serial port.
  */
 void GCodeQueue::get_serial_commands() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_read_commands();
+    return;
+  #endif
+
   #if ENABLED(BINARY_FILE_TRANSFER)
     if (card.flag.binary_mode) {
       /**
@@ -620,6 +628,11 @@ void GCodeQueue::get_serial_commands() {
  *  - The SD card file being actively printed
  */
 void GCodeQueue::get_available_commands() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_read_commands();
+    return;
+  #endif
+
   if (ring_buffer.full()) return;
 
   get_serial_commands();

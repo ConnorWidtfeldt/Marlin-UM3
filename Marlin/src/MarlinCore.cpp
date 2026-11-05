@@ -29,6 +29,9 @@
  */
 
 #include "MarlinCore.h"
+#if ENABLED(UM3_COMPATIBILITY)
+  #include "feature/ultimaker3/native_api.h"
+#endif
 
 #include "HAL/shared/Delay.h"
 #include "HAL/shared/esp_wifi.h"
@@ -406,6 +409,12 @@ void startOrResumeJob() {
  *  - Pulse FET_SAFETY_PIN if it exists
  */
 inline void manage_inactivity(const bool no_stepper_sleep=false) {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_read_commands();
+    um3_stock::manage_inactivity();
+    return;
+  #endif
+
 
   queue.get_available_commands();
 
@@ -1136,6 +1145,16 @@ inline void tmc_standby_setup() {
  *  - Set Marlin to RUNNING State
  */
 void setup() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    hal.init();
+    calibrate_delay_loop();
+    settings.reset();
+    planner.init();
+    um3_stock::setup();
+    marlin_state = MF_RUNNING;
+    return;
+  #endif
+
   #ifdef FASTIO_INIT
     FASTIO_INIT();
   #endif
@@ -1668,6 +1687,12 @@ void setup() {
  *    as long as idle() or manage_inactivity() are being called.
  */
 void loop() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock::loop();
+    idle();
+    return;
+  #endif
+
   do {
     idle();
 

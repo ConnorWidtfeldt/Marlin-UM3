@@ -39,6 +39,15 @@ uint8_t planner_free_slots(uint8_t head, uint8_t tail);
 // Reject invalid calibration or overflow without modifying the output.
 bool tool_offset_steps(float millimeters, float steps_per_mm, int32_t &offset);
 
+// Stock XYZ rounds before subtracting step offsets; E truncates toward zero.
+// Reject overflow/non-finite calibration without partially updating output.
+bool physical_target_steps(const float logical[4],const int32_t tool_offset[3],
+                           const float steps_per_mm[4],int32_t physical[4]);
+
+// Preserve the vendor M205 Euclidean XY jerk limit while using the modern planner.
+float junction_speed(const float current[4],const float previous[4],float nominal,
+                     float previous_nominal,uint8_t queued,float xyjerk,float zjerk,float ejerk);
+
 // Recover logical XYZE after stopping at executed physical steps. The selected
 // tool contributes XYZ offsets only. Host calibration supplies steps_per_mm.
 // Reject invalid input without partially updating logical_position.

@@ -66,6 +66,10 @@
  */
 
 #include "planner.h"
+#if ENABLED(UM3_COMPATIBILITY)
+  #include "../feature/ultimaker3/native_api.h"
+  #include "../feature/ultimaker3/motion_contract.h"
+#endif
 #include "stepper.h"
 #include "motion.h"
 #include "temperature.h"
@@ -2815,6 +2819,11 @@ bool Planner::_populate_block(
 
   #if HAS_CLASSIC_JERK
 
+    #if ENABLED(UM3_COMPATIBILITY)
+      vmax_junction_sqr=sq(ultimaker3::junction_speed(&current_speed.x,&previous_speed.x,
+        block->nominal_speed,previous_nominal_speed,moves_queued,max_jerk.x,max_jerk.z,max_jerk.e));
+    #else
+
     /**
      * Adapted from Průša MKS firmware
      * https://github.com/prusa3d/Prusa-Firmware
@@ -2907,6 +2916,8 @@ bool Planner::_populate_block(
     #else
       vmax_junction_sqr = sq(vmax_junction);          // Go up or down to the new speed
     #endif
+
+    #endif // UM3 host jerk units
 
   #endif // Classic Jerk Limiting
 
@@ -3026,6 +3037,12 @@ bool Planner::buffer_segment(const abce_pos_t &abce
 
   // The target position of the tool in absolute steps
   // Calculate target position in absolute steps
+  #if ENABLED(UM3_COMPATIBILITY)
+    int32_t steps[4];
+    const float logical[4]={abce.a,abce.b,abce.c,abce.e};
+    if(!um3_native_target_steps(logical,extruder,steps)) return false;
+    const abce_long_t target={steps[0],steps[1],steps[2],steps[3]};
+  #else
   const abce_long_t target = {
      LOGICAL_AXIS_LIST(
       int32_t(LROUND(abce.e * settings.axis_steps_per_mm[E_AXIS_N(extruder)])),
@@ -3040,6 +3057,8 @@ bool Planner::buffer_segment(const abce_pos_t &abce
       int32_t(LROUND(abce.w * settings.axis_steps_per_mm[W_AXIS]))
     )
   };
+
+  #endif
 
   #if HAS_POSITION_FLOAT
     const xyze_pos_t target_float = abce;
@@ -3254,6 +3273,12 @@ bool Planner::buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s
 void Planner::set_machine_position_mm(const abce_pos_t &abce) {
   TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
   TERN_(HAS_POSITION_FLOAT, position_float = abce);
+  #if ENABLED(UM3_COMPATIBILITY)
+    int32_t steps[4];
+    const float logical[4]={abce.a,abce.b,abce.c,abce.e};
+    if(!um3_native_target_steps(logical,active_extruder,steps)) return;
+    position.set(steps[0],steps[1],steps[2],steps[3]);
+  #else
   position.set(
     LOGICAL_AXIS_LIST(
       LROUND(abce.e * settings.axis_steps_per_mm[E_AXIS_N(active_extruder)]),
@@ -3268,6 +3293,8 @@ void Planner::set_machine_position_mm(const abce_pos_t &abce) {
       LROUND(abce.w * settings.axis_steps_per_mm[W_AXIS])
     )
   );
+
+  #endif
 
   if (has_blocks_queued()) {
     //previous_nominal_speed = 0.0f; // Reset planner junction speeds. Assume start from rest.
@@ -3308,7 +3335,11 @@ void Planner::set_position_mm(const xyze_pos_t &xyze) {
     TERN_(DISTINCT_E_FACTORS, last_extruder = active_extruder);
 
     const float e_new = DIFF_TERN(FWRETRACT, e, fwretract.current_retract[active_extruder]);
-    position.e = LROUND(settings.axis_steps_per_mm[axis_index] * e_new);
+    #if ENABLED(UM3_COMPATIBILITY)
+      position.e = int32_t(settings.axis_steps_per_mm[axis_index] * e_new);
+    #else
+      position.e = LROUND(settings.axis_steps_per_mm[axis_index] * e_new);
+    #endif
     TERN_(HAS_POSITION_FLOAT, position_float.e = e_new);
     TERN_(IS_KINEMATIC, TERN_(HAS_EXTRUDERS, position_cart.e = e));
 
