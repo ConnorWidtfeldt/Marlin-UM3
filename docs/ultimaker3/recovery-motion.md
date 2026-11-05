@@ -55,14 +55,16 @@ planner and interrupt behavior requires integration with modern Marlin.
 
 | Named ARM data | ARM address | Compiled values | Unique matching AVR flash offset |
 | --- | --- | --- | --- |
-| `axis_steps_per_unit` | `0x5751c` | X=80, Y=80, Z=200, E=369 steps/mm | `0x2cbb` |
-| `homing_feedrate` | `0x574c8` | 6000, 6000, 2400, 0 mm/min | `0x2c7f` |
-| `max_feedrate` | `0x5750c` | 300, 300, 40, 45 mm/s | `0x2ccb` |
-| `max_pos` | `0x574e0` | 230, 230, 240 mm | `0x2c6f` |
+| `axis_steps_per_unit` | `0x5751c` | X=80, Y=80, Z=200, E=369 steps/mm | `0x12cbb` |
+| `homing_feedrate` | `0x574c8` | 6000, 6000, 2400, 0 mm/min | `0x12c7f` |
+| `max_feedrate` | `0x5750c` | 300, 300, 40, 45 mm/s | `0x12ccb` |
+| `max_pos` | `0x574e0` | 230, 230, 240 mm | `0x12c6f` |
 
 The AVR observations are exact packed little-endian float sequences in a
 checksum-validated Intel HEX image. They independently corroborate these arrays,
 not every instruction in the ARM build. `STOCK_*` arrays preserve that distinction.
+The offsets were corrected after independently resolving Intel HEX extended
+addresses; the former references omitted `0x10000`. The array values are unchanged.
 
 Griffin's `machines/um3.json` supplies Z=400 steps/mm and `9511.json` supplies
 Extended movement bounds 215×215×310 mm. `applicationLayer.py` emits runtime

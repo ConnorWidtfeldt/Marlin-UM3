@@ -21,6 +21,8 @@ The detailed ledgers are [thermal](recovery-thermal.md), [power](recovery-power.
 and [motion/probe](recovery-motion.md). Each distinguishes observed behavior from
 defensive changes and unresolved integration. All modules compile for ATmega2560
 at 16 MHz. No hardware output or modern command path calls them yet.
+The [assembly comparison](assembly-comparison.md) records the limited matches
+from unchanged vendor routines and why full binary equivalence is not established.
 
 New API validation deliberately fails closed on invalid configuration. The power
 allocator also caps hotends against the remaining total, a documented improvement
