@@ -13,6 +13,11 @@ the stock `jedi-marlin` **2019.01.27** package, especially the files identified 
 [vendor-baseline.json](vendor-baseline.json), is needed to resolve those gaps.
 S-line implementations are comparison evidence only.
 
+An [actual build with the documented Arduino 1.0.5 compiler](vendor-build.md)
+confirms that the published tree fails compilation; the same toolchain
+successfully builds Arduino's Blink control example. `jedi-marlin` is the vendor
+package name for this intended source project, not a separate repository.
+
 ## Reproduce the checks
 
 Use Python 3.11 or newer and a C++ compiler with AddressSanitizer/UBSan. Install

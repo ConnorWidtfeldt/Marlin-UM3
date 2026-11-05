@@ -174,8 +174,10 @@
       "id": "source_completeness",
       "status": "blocked",
       "required": true,
-      "reason": "Published UM3 main and added drivers reference missing definitions; thermal, pin, planner, stepper, serial and watchdog files remain unchanged from UM2 parent. A stock source baseline cannot be built faithfully from this tree.",
+      "reason": "Confirmed by an unmodified source build using official Arduino 1.0.5 AVR GCC 4.3.2: configuration and Blink control pass, but UM3 compilation fails on missing or conflicting thermal, planner, pin and probe interfaces. Supplying the existing default MOTHERBOARD=72 removes an include-order error without resolving those interfaces.",
       "evidence": [
+        "docs/ultimaker3/vendor-build.md",
+        "docs/ultimaker3/vendor-build.json",
         "vendor:Marlin/Marlin_main.cpp",
         "vendor:Marlin/Configuration.h",
         "vendor:Marlin/pins.h",

@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-05",
+  "vendor_revision": "4545818112027387f09e87f930117ab8f3804327",
+  "source_files_verified_unchanged": 531,
+  "source_tree_modified": false,
+  "arduino_distribution": {
+    "version": "1.0.5",
+    "url": "https://downloads.arduino.cc/arduino-1.0.5-linux64.tgz",
+    "sha256": "3047aa2a0482aea9eeafbea0c0a43756c8bda0772aaeff97856e1d70ad16cfaf"
+  },
+  "environment": {
+    "architecture": "linux/amd64",
+    "avr_gcc": "4.3.2",
+    "cmake": "3.16.3",
+    "base_image": "amd64/ubuntu@sha256:efc44a68d205033006a2f924c85189d384615943d065cb255493bdc5f63060ad",
+    "runtime_network": "disabled",
+    "source_and_arduino_mounts": "read-only"
+  },
+  "builds": {
+    "unmodified": {
+      "configure_exit": 0,
+      "build_exit": 2,
+      "compiler_error_diagnostics": 460,
+      "jedi_hex_produced": false
+    },
+    "board72": {
+      "configure_exit": 0,
+      "build_exit": 2,
+      "compiler_error_diagnostics": 417,
+      "jedi_hex_produced": false
+    }
+  },
+  "positive_control": {
+    "example": "Arduino 1.0.5 Blink",
+    "mcu": "atmega2560",
+    "build_exit": 0,
+    "text_bytes": 2442,
+    "data_bytes": 2,
+    "bss_bytes": 25
+  },
+  "logs": {
+    "configure.log": {
+      "sha256": "50bcc025bed9dd68c41800a54ea364e8260966a059e25f59bae0d61059fd3263",
+      "bytes": 832
+    },
+    "vendor-build.log": {
+      "sha256": "b36464827efb3981c54588df27b2e655098de95296cdc7fcc94129bc96486b75",
+      "bytes": 88803
+    },
+    "configure-board72.log": {
+      "sha256": "bbe99f780b3bfbb4fee08ee069b0b8a56f130b28ced50b35171ba49871d1aca6",
+      "bytes": 840
+    },
+    "vendor-build-board72.log": {
+      "sha256": "c1dac2b5836a879bee665ae75b8cf58bdfcafc1167507ec9af20debe65b2be8d",
+      "bytes": 84695
+    },
+    "compiler-version.txt": {
+      "sha256": "23687256c556bd3d8b2056dacc86ce8cff8c5d9034ab45f8b931db574d0c953a",
+      "bytes": 535
+    },
+    "blink-build.log": {
+      "sha256": "8997335e9b1937ceae40d2be48da6d1a4f7101701d7d2adb5cc334a26c75f85b",
+      "bytes": 346
+    },
+    "results.json": {
+      "sha256": "a945d6f73a66de6199732b41816c839326c265f9d7c93f05519dcf36e076882c",
+      "bytes": 64
+    },
+    "board72-exit.txt": {
+      "sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "bytes": 2
+    },
+    "run-build.sh": {
+      "sha256": "78b6b6bdba41914169ffffa624568beb9f8c4b4f10e4ebdecfe33a3b5647aed0",
+      "bytes": 2083
+    },
+    "Dockerfile": {
+      "sha256": "8bcd8792c0ed014077f16989875f2be696c7d20bdd33b27161eef525614a7946",
+      "bytes": 356
+    },
+    "compile_commands.json": {
+      "sha256": "124ca294d3749c4cb33263b5b20b7223f638f672be5dc802b305a1c66f314d88",
+      "bytes": 21702
+    },
+    "compile_commands-board72.json": {
+      "sha256": "82c236dd906088dda07724a2d4cc66b307e59d7d0db3d0fa8538081d6050e243",
+      "bytes": 22727
+    }
+  },
+  "hardware_tested": false
+}

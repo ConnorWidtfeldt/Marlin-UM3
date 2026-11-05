@@ -23,6 +23,12 @@ redistributing the host filesystem.
 
 ## Source completeness is a hardware blocker
 
+The [legacy build reproduction](vendor-build.md) now verifies this concern using
+the official Arduino 1.0.5 GCC 4.3.2 tools. CMake configuration and an Arduino Blink
+control build pass, but the unmodified UM3 tree fails compilation. Supplying its
+existing default board value globally removes an include-order defect while
+leaving the missing thermal, planner and probing interfaces unresolved.
+
 The UM3 commit adds drivers and replaces `Marlin_main.cpp`, but leaves its UM2
 parent versions of `Configuration.h`, `Configuration_adv.h`, `pins.h`,
 `Marlin.h`, `MarlinSerial.cpp/.h`, `planner.cpp/.h`, `stepper.cpp/.h`,
