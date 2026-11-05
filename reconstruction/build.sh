@@ -4,10 +4,11 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 output=${1:-"$root/artifacts/stock-comparison"}
 mkdir -p "$output"
 output=$(CDPATH= cd -- "$output" && pwd)
-image=homefab-um3-stock:arduino-1.0.5
+image=homefab-um3-stock:gcc4.8.1-atmel3.4.4
 docker build --platform linux/amd64 --tag "$image" --file "$root/reconstruction/Dockerfile" "$root/reconstruction"
 image_id=$(docker image inspect "$image" --format '{{.Id}}')
-epoch=$(git -C "$root" log -1 --format=%ct)
+# Match the stock image build strings; source identity is recorded separately.
+epoch=${SOURCE_DATE_EPOCH:-1548629527}
 commit=$(git -C "$root" rev-parse HEAD)
 dirty=false
 if test -n "$(git -C "$root" status --porcelain)"; then dirty=true; fi

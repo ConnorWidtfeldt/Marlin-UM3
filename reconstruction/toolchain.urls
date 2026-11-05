@@ -1,0 +1,5 @@
+https://downloads.arduino.cc/arduino-1.0.5-linux64.tgz
+https://archive.debian.org/debian/pool/main/m/mpfr4/libmpfr4_3.1.5-1_amd64.deb
+https://archive.debian.org/debian/pool/main/b/binutils-avr/binutils-avr_2.24+Atmel3.4.4-1_amd64.deb
+https://archive.debian.org/debian/pool/main/g/gcc-avr/gcc-avr_4.8.1+Atmel3.4.4-2_amd64.deb
+https://archive.debian.org/debian/pool/main/a/avr-libc/avr-libc_1.8.0+Atmel3.4.4-1_all.deb

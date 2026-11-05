@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+from compare_hex import STOCK_SHA256
 
 
 def hex_range(data):
@@ -55,6 +56,8 @@ def main():
         'source_date_epoch': int(os.environ['SOURCE_DATE_EPOCH']),
         'arduino': '1.0.5',
         'compiler': (output / 'toolchain.txt').read_text().splitlines()[0],
+        'toolchain_packages': (output / 'toolchain-packages.txt').read_text().splitlines(),
+        'toolchain_lock_sha256': hashlib.sha256(Path('/opt/um3-toolchain/toolchain.sha256').read_bytes()).hexdigest(),
         'docker_image': os.environ['UM3_IMAGE_ID'],
         'docker_platform': 'linux/amd64',
         'sdk_sha256': '3047aa2a0482aea9eeafbea0c0a43756c8bda0772aaeff97856e1d70ad16cfaf',
@@ -62,7 +65,9 @@ def main():
         'application_address_range': image_range,
         'stack_interrupt_headroom_bytes': 8192 - sram,
         'stack_high_water_measured': False,
-        'stock_binary_equivalent': False, 'hardware_release': False,
+        'stock_hex_sha256': STOCK_SHA256,
+        'stock_hex_identical': hashlib.sha256((output / 'build/jedi.hex').read_bytes()).hexdigest() == STOCK_SHA256,
+        'hardware_release': False,
         'sha256': {},
     }
     sources = {}
@@ -71,7 +76,7 @@ def main():
             if path.is_file() and '__pycache__' not in path.parts:
                 sources[str(path.relative_to('/source'))] = hashlib.sha256(path.read_bytes()).hexdigest()
     (output / 'sources.json').write_text(json.dumps(sources, indent=2) + '\n')
-    for name in ['jedi-reconstructed-NOT-FOR-FLASHING.hex', 'jedi-reconstructed.elf', 'jedi-reconstructed.map', 'assembly.txt', 'toolchain.txt', 'size.txt', 'sources.json']:
+    for name in ['jedi-reconstructed-NOT-FOR-FLASHING.hex', 'jedi-reconstructed.elf', 'jedi-reconstructed.map', 'assembly.txt', 'toolchain.txt', 'toolchain-packages.txt', 'size.txt', 'sources.json']:
         report['sha256'][name] = hashlib.sha256((output / name).read_bytes()).hexdigest()
     (output / 'provenance.json').write_text(json.dumps(report, indent=2) + '\n')
     (output / 'SHA256SUMS').write_text(''.join(f'{digest}  {name}\n' for name, digest in report['sha256'].items()))
