@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "Arduino.h"
+#include "Configuration.h"
 #include "pins.h"
 #include "watchdog.h"
 #include "Marlin.h"
@@ -59,7 +60,7 @@ void Board::detect()
 
     Board::powerDown();
 
-    int16_t main_board_voltage = analogRead(ADC_INPUT_VOLTAGE_PIN);
+    int16_t main_board_voltage = analogRead(ADC_BOARD_ID_PIN);
     if (isWithinTolerance(main_board_voltage, MAIN_BOARD_ADC_V2_0))
     {
         board_id = BOARD_V2_0;

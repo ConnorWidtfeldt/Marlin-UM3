@@ -25,8 +25,8 @@
 FlowA1335 flowSensor[MAX_A1335_SENSOR_COUNT] = {0, 1, 2, 3};
 
 static FlowSensorSettings defaultFlowsensorSettings = {
-        .minimum_extrusion_factor = 0.2,
-        .maximum_extrusion_factor = 1.2
+        0.2, // minimum_extrusion_factor; aggregate field order in flow.h
+        1.2  // maximum_extrusion_factor; GCC 4.3 has no C++ designated initializers
 };
 
 Flow::Flow()

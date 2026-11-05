@@ -932,6 +932,69 @@ pins
 #endif	/*	_AVR_ATmega{644,644P,644PA}__ */
 
 #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega2560__)
+
+// Physical-port tokens used by the UM3 drivers, independent of Arduino pin numbers.
+#define DIOD2_PIN PIND2
+#define DIOD2_RPORT PIND
+#define DIOD2_WPORT PORTD
+#define DIOD2_DDR DDRD
+#define DIOD3_PIN PIND3
+#define DIOD3_RPORT PIND
+#define DIOD3_WPORT PORTD
+#define DIOD3_DDR DDRD
+#define DIOD5_PIN PIND5
+#define DIOD5_RPORT PIND
+#define DIOD5_WPORT PORTD
+#define DIOD5_DDR DDRD
+#define DIOF0_PIN PINF0
+#define DIOF0_RPORT PINF
+#define DIOF0_WPORT PORTF
+#define DIOF0_DDR DDRF
+#define DIOF1_PIN PINF1
+#define DIOF1_RPORT PINF
+#define DIOF1_WPORT PORTF
+#define DIOF1_DDR DDRF
+#define DIOF2_PIN PINF2
+#define DIOF2_RPORT PINF
+#define DIOF2_WPORT PORTF
+#define DIOF2_DDR DDRF
+#define DIOF3_PIN PINF3
+#define DIOF3_RPORT PINF
+#define DIOF3_WPORT PORTF
+#define DIOF3_DDR DDRF
+#define DIOF4_PIN PINF4
+#define DIOF4_RPORT PINF
+#define DIOF4_WPORT PORTF
+#define DIOF4_DDR DDRF
+#define DIOF5_PIN PINF5
+#define DIOF5_RPORT PINF
+#define DIOF5_WPORT PORTF
+#define DIOF5_DDR DDRF
+#define DIOF6_PIN PINF6
+#define DIOF6_RPORT PINF
+#define DIOF6_WPORT PORTF
+#define DIOF6_DDR DDRF
+#define DIOF7_PIN PINF7
+#define DIOF7_RPORT PINF
+#define DIOF7_WPORT PORTF
+#define DIOF7_DDR DDRF
+#define DIOJ3_PIN PINJ3
+#define DIOJ3_RPORT PINJ
+#define DIOJ3_WPORT PORTJ
+#define DIOJ3_DDR DDRJ
+#define DIOJ4_PIN PINJ4
+#define DIOJ4_RPORT PINJ
+#define DIOJ4_WPORT PORTJ
+#define DIOJ4_DDR DDRJ
+#define DIOJ5_PIN PINJ5
+#define DIOJ5_RPORT PINJ
+#define DIOJ5_WPORT PORTJ
+#define DIOJ5_DDR DDRJ
+#define DIOJ6_PIN PINJ6
+#define DIOJ6_RPORT PINJ
+#define DIOJ6_WPORT PORTJ
+#define DIOJ6_DDR DDRJ
+
 // UART
 #define	RXD					DIO0
 #define	TXD					DIO1
