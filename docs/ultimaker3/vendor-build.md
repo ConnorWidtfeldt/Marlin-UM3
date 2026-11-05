@@ -94,3 +94,17 @@ This test confirms failure of the published source with its documented compiler.
 It does not identify the exact unpublished build inputs, establish equivalence
 to the installed stock binary, or resolve thermal, probing and board-safety
 behavior. Those requirements continue to block the replacement firmware.
+
+## Subsequent reconstruction
+
+The failed unmodified build above is retained as baseline evidence. The separate
+[`reconstruct/um3-stock` branch](https://github.com/ConnorWidtfeldt/Marlin-UM3/tree/reconstruct/um3-stock)
+now repairs the configuration, headers, serial, planner/stepper and thermal
+implementations using corroborated binary evidence and identified sibling source.
+It also restores the original Makefile's C-driver/explicit-libm link convention.
+The resulting historical comparison image links under Docker with Arduino 1.0.5
+and GCC 4.3.2: 97428 application bytes and 5759 static SRAM bytes.
+
+See its [reproduction and qualification limits](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/f0d92f0b66833e9afe10262fbbc60371b780bcd8/reconstruction/README.md).
+This does not change the result for the published unmodified tree, establish
+stock binary equivalence, or produce a completed modern UM3 port.

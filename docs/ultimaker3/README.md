@@ -20,6 +20,12 @@ confirms that the published tree fails compilation; the same toolchain
 successfully builds Arduino's Blink control example. `jedi-marlin` is the vendor
 package name for this intended source project, not a separate repository.
 
+The separate historical [`reconstruct/um3-stock` branch](https://github.com/ConnorWidtfeldt/Marlin-UM3/tree/reconstruct/um3-stock)
+now repairs that source into a linked AVR comparison image using Docker and
+Arduino 1.0.5 / GCC 4.3.2. Its [build instructions and evidence](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/f0d92f0b66833e9afe10262fbbc60371b780bcd8/reconstruction/README.md)
+record the reconstruction and remaining parity/hardware limits. It is separate
+from this modern port; the `um3_extended` release gate remains closed.
+
 ## Reproduce the checks
 
 Use Python 3.11 or newer and a C++ compiler with AddressSanitizer/UBSan. Install

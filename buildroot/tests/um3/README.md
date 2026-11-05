@@ -39,5 +39,10 @@ backpressure, duplicate rejection, sequence wraparound, and exact response bytes
 Responses use the CRLF framing emitted by public UM3 `MarlinSerial::println()`;
 the shipped host parses the stripped line.
 
+Later binary recovery found that the shipped ARM simulator's `println()` emits
+LF alone. The historical reconstruction branch restores that behavior. These
+isolated formatter fixtures retain public-source CRLF, which the host also
+strips; exact shipped output framing remains a modern transport-integration gate.
+
 This decoder is not connected to Marlin's command queue or hardware. Passing these
 tests does not establish firmware, thermal, motion, or machine compatibility.

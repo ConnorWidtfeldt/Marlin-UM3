@@ -175,7 +175,7 @@
       "id": "source_completeness",
       "status": "blocked",
       "required": true,
-      "reason": "The published source does not compile even with Arduino 1.0.5. Binary recovery reconstructs selected missing calculations and state machines, but not the complete temperature engine, peripherals, probe or modern queue/planner bindings. Account for every missing behavior with authoritative source or corroborated reconstruction before release.",
+      "reason": "The published tree fails compilation. A separate reconstruct/um3-stock branch now links a full historical candidate in Docker after binary-backed repairs. Complete stock equivalence remains unverified, and its connected drivers/planner/thermal engine are not integrated into the modern port. Account for every required behavior before release.",
       "evidence": [
         "docs/ultimaker3/vendor-build.md",
         "docs/ultimaker3/vendor-build.json",
@@ -185,7 +185,8 @@
         "vendor:Marlin/temperature.cpp",
         "vendor:Marlin/planner.cpp",
         "vendor:Marlin/stepper.cpp",
-        "docs/ultimaker3/recovery.md"
+        "docs/ultimaker3/recovery.md",
+        "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/f0d92f0b66833e9afe10262fbbc60371b780bcd8/reconstruction/README.md"
       ]
     },
     {
@@ -207,7 +208,7 @@
       "id": "transport_integration",
       "status": "unimplemented",
       "required": true,
-      "reason": "Packet receiver, 96-byte payload plus terminator storage, dispatch, asynchronous output, resend RX discard, sequence/ack timing and planner-credit reporting must integrate with the modern production queue.",
+      "reason": "Packet receiver, 96-byte payload plus terminator storage, dispatch, asynchronous output, resend RX discard, sequence/ack timing and planner-credit reporting must integrate with the modern production queue. Shipped ARM println emits LF only; isolated public-source formatter fixtures currently use host-accepted CRLF, so exact shipped output framing remains part of this integration gate.",
       "evidence": [
         "usr/share/griffin/griffin/printer/drivers/marlin/transportLayer.py",
         "vendor:Marlin/SerialProtocol.cpp",
