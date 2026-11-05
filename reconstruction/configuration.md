@@ -36,12 +36,12 @@ Stock step/direction/enable/endstop/heater/current pins are mapped as documented
 in the modern branch's hardware audit. PA2 and PA6 explicitly use Arduino digital
 24 and28, avoiding ambiguous `A2`/`A6` names. Physical F/D/J tokens used by existing
 vendor drivers now have fast-I/O aliases for the corresponding MCU PIN/PORT/DDR
-registers. The stock A4988 current range is2000mA; initialization remains runtime
+registers. The stock A4988 current range is 2000 mA; initialization remains runtime
 board-dependent. Existing non-stock 2621B paths are retained for comparison with
 the shipped binary, without adding S-line BOARD_V4 support.
 
 The flow-settings initializer changes only from designated to positional syntax
-in the exact struct member order, making it accepted by AVR GCC4.3.2. Compiled
+in the exact struct member order, making it accepted by AVR GCC 4.3.2. Compiled
 flow support remains present as in stock; this does not add physical sensors to
 UM3 machines. Host-supplied current, direction, temperature compensation, PID,
 geometry, nozzle offsets and calibration remain runtime settings.

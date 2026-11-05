@@ -1,0 +1,31 @@
+name: Historical UM3 comparison build
+
+on:
+  push:
+    branches: [reconstruct/um3-stock]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stock-comparison:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 reconstruction/test_report.py
+      - run: python3 reconstruction/run_serial_test.py
+      - run: sh reconstruction/build.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stock-comparison-NOT-FOR-FLASHING
+          path: |
+            artifacts/stock-comparison/jedi-reconstructed*
+            artifacts/stock-comparison/provenance.json
+            artifacts/stock-comparison/SHA256SUMS
+            artifacts/stock-comparison/sources.json
+            artifacts/stock-comparison/size.txt
+            artifacts/stock-comparison/toolchain.txt
+            artifacts/stock-comparison/assembly.txt
+          if-no-files-found: error

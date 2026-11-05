@@ -117,8 +117,8 @@ The legacy code preserves stock finite-input semantics and does not import the
 modern port's additional NaN hardening into a comparison-image reconstruction.
 
 The historical compile/link is run by the main build task. An isolated native
-AVR GCC7.3 check compiles both `temperature.cpp` and `watchdog.cpp` with the
-historical packing/unsigned/section flags and Arduino1.0.5 headers. The remaining
+AVR GCC 7.3 check compiles both `temperature.cpp` and `watchdog.cpp` with the
+historical packing/unsigned/section flags and Arduino 1.0.5 headers. The remaining
 warnings concern the existing UART macro's `defined` expansion and intentional
 ISR fallthrough; no thermal compile errors remain. Final core build and linked
 comparison results must be recorded by that task. No heater, printer, bootloader
