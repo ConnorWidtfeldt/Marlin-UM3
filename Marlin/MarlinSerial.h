@@ -70,14 +70,14 @@
 // using a ring buffer (I think), in which rx_buffer_head is the index of the
 // location to which to write the next incoming character and rx_buffer_tail
 // is the index of the location from which to read.
-#define RX_BUFFER_SIZE 128
+#define RX_BUFFER_SIZE 256
 
 
 struct ring_buffer
 {
   unsigned char buffer[RX_BUFFER_SIZE];
-  int head;
-  int tail;
+  volatile uint8_t head;
+  volatile uint8_t tail;
 };
 
 #if UART_PRESENT(SERIAL_PORT)
@@ -113,7 +113,7 @@ class MarlinSerial //: public Stream
     {
       if((M_UCSRxA & (1<<M_RXCx)) != 0) {
         unsigned char c  =  M_UDRx;
-        int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
+        uint8_t i = uint16_t(rx_buffer.head + 1) % RX_BUFFER_SIZE;
 
         // if we should be storing the received character into the location
         // just before the tail (meaning that the head would advance to the

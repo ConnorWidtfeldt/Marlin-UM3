@@ -1,6 +1,13 @@
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
 
+// Binary transport diagnostics are host protocol strings, not LCD translations.
+#define MSG_ERR_UNEXPECTED_SEQUENCE_NUMBER "Sequence number is unexpected (received, expected): "
+#define MSG_ERR_PAYLOAD_SIZE_TOO_BIG "Payload size is too big for packet with sequence number: "
+#define MSG_ERR_PAYLOAD_ILLEGAL_CHARACTER "Payload byte not in acceptable (ASCII) range at position #"
+#define MSG_ERR_CRC_MISMATCH "Checksum mismatch for packet with sequence number: "
+#define MSG_ERR_PACKET_UNHANDLED "Received packet could not be handled (buffer full), packet with sequence number: "
+
 // NOTE: IF YOU CHANGE THIS FILE / MERGE THIS FILE WITH CHANGES
 //
 //   ==> ALWAYS TRY TO COMPILE MARLIN WITH/WITHOUT "ULTIPANEL" / "ULTRALCD" / "SDSUPPORT" #define IN "Configuration.h"
