@@ -1,0 +1,33 @@
+# UM3 transport tests
+
+Run from the Marlin repository root:
+
+```sh
+python3 buildroot/tests/um3/run.py
+```
+
+This compiles the actual platform-independent transport implementation as C++11
+with AddressSanitizer and UndefinedBehaviorSanitizer. A C++ compiler and Python 3
+are required; there are no additional dependencies. Set `CXX` to select a compiler.
+Temporary build files are removed automatically.
+
+The committed packet and CRC fixtures were produced with the unmodified Python
+modules in the official UM3 `5.3.0.20211003` image. To independently check them
+against an extracted image:
+
+```sh
+python3 buildroot/tests/um3/run.py --stock-root /path/to/rootfs/usr/share/griffin
+```
+
+The runner verifies the four recorded source digests before importing only the
+CRC, packet, and response-parser modules. It does not start Griffin or communicate
+with a printer. `fixtures.json` records the source digests and wire bytes.
+
+Coverage includes fragmented and corrupt packets, maximum-length payloads,
+reserved/illegal bytes, CRC bytes equal to the framing byte, resend after queue
+backpressure, duplicate rejection, sequence wraparound, and exact response bytes.
+Responses use the CRLF framing emitted by public UM3 `MarlinSerial::println()`;
+the shipped host parses the stripped line.
+
+This decoder is not connected to Marlin's command queue or hardware. Passing these
+tests does not establish firmware, thermal, motion, or machine compatibility.

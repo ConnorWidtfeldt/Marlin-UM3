@@ -186,10 +186,13 @@
     },
     {
       "id": "transport_primitive",
-      "status": "unimplemented",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Wire primitive and boundary checks require production-code tests against stock host packet and CRC behavior.",
+      "reason": "Isolated production decoder passes stock-host-derived fixtures, ASan/UBSan boundary checks and an ATmega2560 object compile. Queue and hardware integration remain separately unimplemented.",
       "evidence": [
+        "Marlin/src/feature/ultimaker3/serial_protocol.cpp",
+        "buildroot/tests/um3/run.py",
+        "buildroot/tests/um3/fixtures.json",
         "usr/share/griffin/griffin/printer/drivers/marlin/osiHelpers/networkPacket.py",
         "vendor:Marlin/SerialProtocol.cpp",
         "vendor:Marlin/crc16.cpp",
