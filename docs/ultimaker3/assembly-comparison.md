@@ -1,13 +1,19 @@
-# Stock assembly comparison: current evidence
+# Stock assembly comparison
 
-There is no complete source-built UM3 image to compare with stock `jedi.hex`.
-The historical vendor tree fails compilation, while `um3_upstream_check` builds
-an unrelated upstream RAMPS regression image. The reconstructed UM3 components
-compile to AVR objects, but their defensive checks, APIs and layouts deliberately
-differ from stock. Whole-image similarity is therefore not an acceptance metric
-for the modern port.
+The separate historical reconstruction now builds **exactly the official UM3
+5.3.0 HEX**: all 77942 addressed flash bytes and the literal file are identical,
+SHA-256 `448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65`.
+The [full evidence](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
+and [compiler investigation](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/compiler-evidence.md)
+record the matching GCC 4.8.1 / Atmel 3.4.4 toolchain, source corrections and
+trampoline ordering. No output bytes are patched or copied from stock.
 
-## Bounded AVR experiment, 2026-11-05
+This establishes the linked stock target as a baseline for porting. The modern
+port intentionally changes implementation and will require behavioral integration
+tests; its binary is not expected to match historical firmware. Hardware acceptance
+remains separate. The initial investigation below is retained as history.
+
+## Initial bounded AVR experiment, 2026-11-05
 
 Compare unchanged vendor CRC8, CRC16 and power-budget source from
 `4545818112027387f09e87f930117ab8f3804327` against the stock 5.3.0 AVR image,
@@ -55,7 +61,7 @@ The ARM simulator ELF `.comment` contains GCC `4.9.2-10` and `4.8.4-1` markers.
 These establish that ARM link inputs carry those compiler identities. They do
 not identify which compiler built each routine or the AVR firmware. Intel HEX
 does not preserve the AVR ELF's symbol/debug/comment sections, so the stock AVR
-compiler remains unknown. The README's Arduino 1.0.5 recommendation is a candidate
+compiler was not identified by that initial experiment. The README's Arduino 1.0.5 recommendation is a candidate
 build environment, not proof of the unpublished production environment.
 
 Matching the historical compiler and SDK is useful, but byte identity also
@@ -64,13 +70,14 @@ optimization options, library implementations, linker behavior and layout.
 Different code can implement the same behavior; matching relocated instruction
 bytes alone does not verify the referenced data, callees or physical I/O.
 
-The next historical-baseline acceptance work should first reproduce substantial
-unchanged routines to calibrate compiler/options. Then reconstruct missing
+The initial proposed verification path was to reproduce substantial
+unchanged routines to calibrate compiler/options, then reconstruct missing
 routines while retaining the vendor API/layout and compare their control flow,
 instructions, constants, field offsets and called targets against stock AVR.
 Keep that reconstruction separate from intentional hardening and modern Marlin
 integration so each difference has an explanation. The existing ARM replay tests
 remain complementary behavioral evidence; they do not replace AVR comparison.
 
-No stock-equivalent full build, exact AVR compiler identification, or hardware
-acceptance was established by this experiment.
+The initial experiment alone did not establish full-build equivalence. The
+subsequent reconstruction linked above meets that byte-identity gate; hardware
+acceptance remains outstanding.

@@ -175,7 +175,7 @@
       "id": "source_completeness",
       "status": "blocked",
       "required": true,
-      "reason": "The published tree fails compilation. A separate reconstruct/um3-stock branch now links a full historical candidate in Docker after binary-backed repairs. Complete stock equivalence remains unverified, and its connected drivers/planner/thermal engine are not integrated into the modern port. Account for every required behavior before release.",
+      "reason": "The published tree fails compilation. The separate historical reconstruction now generates exactly the official UM3 5.3.0 HEX, all 77942 flash bytes and the literal file. Its connected drivers, planner, probing and thermal engine still require integration and verification in modern Marlin. The historical baseline is verified; modern source completeness remains blocked.",
       "evidence": [
         "docs/ultimaker3/vendor-build.md",
         "docs/ultimaker3/vendor-build.json",
@@ -186,7 +186,7 @@
         "vendor:Marlin/planner.cpp",
         "vendor:Marlin/stepper.cpp",
         "docs/ultimaker3/recovery.md",
-        "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/f0d92f0b66833e9afe10262fbbc60371b780bcd8/reconstruction/README.md"
+        "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md"
       ]
     },
     {
@@ -638,5 +638,14 @@
     "SHA-256 pins inspected package bytes but does not independently verify vendor signature.",
     "Candidate upstream command implementations are not verified UM3 compatibility.",
     "Host defaults do not resolve AVR thermal conversion, timing, pin maps or safety logic."
-  ]
+  ],
+  "historical_baseline": {
+    "commit": "7a80a3bb615362f513e1608447a6eb92efa35098",
+    "branch": "reconstruct/um3-stock",
+    "stock_hex_sha256": "448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65",
+    "literal_hex_identical": true,
+    "flash_bytes": 77942,
+    "evidence": "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md",
+    "scope": "Linked stock UM3 configuration only; modern integration and hardware acceptance remain unqualified."
+  }
 }

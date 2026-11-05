@@ -21,11 +21,13 @@ The detailed ledgers are [thermal](recovery-thermal.md), [power](recovery-power.
 and [motion/probe](recovery-motion.md). Each distinguishes observed behavior from
 defensive changes and unresolved integration. All modules compile for ATmega2560
 at 16 MHz. No hardware output or modern command path calls them yet.
-The [assembly comparison](assembly-comparison.md) records the limited matches
-from unchanged vendor routines and why full binary equivalence is not established.
-The subsequent [historical reconstruction](https://github.com/ConnorWidtfeldt/Marlin-UM3/tree/reconstruct/um3-stock)
-links the complete legacy candidate for further AVR comparison. Its connected
-drivers, planner and thermal engine are not yet integrated into this modern branch.
+The [assembly comparison](assembly-comparison.md) records the initial compiler
+experiments and subsequent exact whole-image result. The separate
+[historical reconstruction](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
+now generates the literal stock HEX, with zero differing bytes across all 77942
+addressed flash bytes. Its connected drivers, planner, probe and thermal engine
+are not yet integrated into this modern branch. The table above describes only
+the isolated modern production modules.
 
 New API validation deliberately fails closed on invalid configuration. The power
 allocator also caps hotends against the remaining total, a documented improvement

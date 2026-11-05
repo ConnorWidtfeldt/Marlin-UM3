@@ -101,10 +101,12 @@ The failed unmodified build above is retained as baseline evidence. The separate
 [`reconstruct/um3-stock` branch](https://github.com/ConnorWidtfeldt/Marlin-UM3/tree/reconstruct/um3-stock)
 now repairs the configuration, headers, serial, planner/stepper and thermal
 implementations using corroborated binary evidence and identified sibling source.
-It also restores the original Makefile's C-driver/explicit-libm link convention.
-The resulting historical comparison image links under Docker with Arduino 1.0.5
-and GCC 4.3.2: 97428 application bytes and 5759 static SRAM bytes.
+The first GCC 4.3.2 Docker build linked successfully but differed from stock.
+Subsequent compiler calibration selected GCC 4.8.1 / binutils 2.24 / avr-libc 1.8.0
+and restored the original C++ link driver. Source-form and linker-input corrections
+now produce **exactly the official stock HEX**: 77942 flash bytes, 5501 static SRAM.
 
-See its [reproduction and qualification limits](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/f0d92f0b66833e9afe10262fbbc60371b780bcd8/reconstruction/README.md).
-This does not change the result for the published unmodified tree, establish
-stock binary equivalence, or produce a completed modern UM3 port.
+See the [exact-match evidence](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
+and [reproduction instructions](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/README.md).
+This does not change the failure of the published unmodified tree or qualify the
+modern UM3 port.

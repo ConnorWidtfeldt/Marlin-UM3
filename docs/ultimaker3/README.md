@@ -11,9 +11,10 @@ and safety implementations. See [compatibility.md](compatibility.md),
 [hardware.md](hardware.md), and the exhaustive command/subsystem
 [inventory.json](inventory.json). [Binary recovery](recovery.md) now reconstructs
 selected missing behavior from the shipped `jedi-marlin` **2019.01.27** binaries.
-The hardware drivers, timer/output safety paths, full probing algorithm and modern
-Marlin integration remain unresolved. S-line source is used only where independently
-corroborated; original source would still help resolve the remaining gaps.
+The full historical implementation has since been reproduced exactly; its
+hardware drivers, timer/output safety paths and probing algorithm still need
+integration into modern Marlin. S-line source supplied independently checked
+candidates during reconstruction.
 
 An [actual build with the documented Arduino 1.0.5 compiler](vendor-build.md)
 confirms that the published tree fails compilation; the same toolchain
@@ -21,10 +22,12 @@ successfully builds Arduino's Blink control example. `jedi-marlin` is the vendor
 package name for this intended source project, not a separate repository.
 
 The separate historical [`reconstruct/um3-stock` branch](https://github.com/ConnorWidtfeldt/Marlin-UM3/tree/reconstruct/um3-stock)
-now repairs that source into a linked AVR comparison image using Docker and
-Arduino 1.0.5 / GCC 4.3.2. Its [build instructions and evidence](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/f0d92f0b66833e9afe10262fbbc60371b780bcd8/reconstruction/README.md)
-record the reconstruction and remaining parity/hardware limits. It is separate
-from this modern port; the `um3_extended` release gate remains closed.
+now reproduces the **exact official 5.3.0 HEX**, all 77942 flash bytes and the
+literal file, using Docker, Arduino 1.0.5 core sources and GCC 4.8.1 / Atmel 3.4.4.
+Its [comparison evidence](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
+and [build instructions](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/README.md)
+pin the complete toolchain and verify the stock digest. This establishes the
+linked stock baseline; the modern `um3_extended` release gate remains closed.
 
 ## Reproduce the checks
 
