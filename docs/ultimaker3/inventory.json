@@ -1,0 +1,560 @@
+{
+  "schema_version": 1,
+  "release_ready": false,
+  "scope": "Offline UM3 Extended port audit; no flashable firmware or hardware-acceptance claim",
+  "upstream": {
+    "tag": "2.1.2.9",
+    "commit": "7d300b42acadb3e7467e9f4b4fc03ebea592c2d0"
+  },
+  "vendor": {
+    "branch": "Ultimaker3",
+    "commit": "4545818112027387f09e87f930117ab8f3804327",
+    "common_ancestor": "2015989f84918810be615deb57ad3baf9f66c203",
+    "sibling_comparison_only": "f91240bb04e52818746a866bfe6e6af543209b79"
+  },
+  "host_package": {
+    "url": "https://software.ultimaker.com/releases/firmware/9066/stable/5.3.0.20211003/um-update-5.3.0.20211003.swu",
+    "sha256": "5599f1108837fc365b4f5fd567d1561db749a7b28f7befad1e3117d75b182df2",
+    "signature_verified": false,
+    "member_sha256": {
+      "usr/share/griffin/griffin/machines/um3.json": "99b27da6b8cce6d610c2938e82ca7ae20bee1077c73eee9a0d85a331b1512a11",
+      "usr/share/griffin/griffin/machines/9511.json": "fddad9e4682ec9c7486e78f3e8473f1a20984b646371f2853a348350b433ceb1",
+      "usr/share/griffin/griffin/machines/9066.json": "b01a746c63fb9bcc4b7ab32aaba2faed9ec5b34b79268dc05f0bdcb55c2f8d38",
+      "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py": "aa8cf744cdf417cb215ab21b46a105a67bcf586b6206866dc8416c988088592d",
+      "usr/share/griffin/griffin/printer/drivers/marlin/transportLayer.py": "fa39e4e13f4cc1eb7c0e07e7258d6afb94daba5897c95713098aecbe28bef716",
+      "usr/share/griffin/griffin/printer/drivers/marlin/osiHelpers/networkPacket.py": "166cf9ed92132ee11748800e42fa496878a91bee733d4fbbb0b585783beb428f",
+      "usr/share/griffin/griffin/printer/procedures/initialization/initiateHardwareInitialization.py": "85cc7e464c58eaf044288512c1a1aa2f71c8b9881d95e1bbdb830c112c9594dc",
+      "usr/share/griffin/griffin/printer/heatableObject/heatableObject.py": "1ee527afa66e00530ba8cec247c3a8f70021123e2eeeca6bf84c04da96c6db1b",
+      "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex": "9a60748949d154288dfcd4a5064bf3e52117b0480d714f16c7da3bb41ceec9a1",
+      "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/firmwareUpdateBase.py": "5422e6f18c07f2594c071a170510ec2d534ffcd881efb82e8d0a9bbdffb5871b",
+      "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py": "82a1260e48632c777ba5409185adf8ce635c58652c5fefa689bf54f1f462e459",
+      "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json": "73b24db97eb38e8af324af30069b5cef0be68321f40154334eaf0975df223cf5"
+    }
+  },
+  "host_defaults": {
+    "evidence": [
+      "usr/share/griffin/griffin/machines/um3.json",
+      "usr/share/griffin/griffin/machines/9511.json"
+    ],
+    "machine_id": 9511,
+    "machine_name": "Ultimaker 3 Extended",
+    "hotend_count": 2,
+    "movement_min_mm": [
+      0,
+      0,
+      0
+    ],
+    "movement_max_mm": [
+      215,
+      215,
+      310
+    ],
+    "build_volume_mm": [
+      215,
+      215,
+      310
+    ],
+    "steps_per_mm": {
+      "x": 80.0,
+      "y": 80.0,
+      "z": 400.0,
+      "e": 369.0
+    },
+    "direction_inverted": {
+      "x": true,
+      "y": false,
+      "z": true,
+      "e0": true,
+      "e1": false
+    },
+    "motor_current_ma": {
+      "xy": 1300,
+      "z": 1300,
+      "e": 1250
+    },
+    "bed_level_sensor": true,
+    "filament_flow_sensor": false,
+    "nominal_hotend_1_xy_offset_mm": [
+      18,
+      0
+    ],
+    "power": {
+      "total_w": 221,
+      "idle_w": 46,
+      "max_hotend_slot_w": 75,
+      "bed_resistance_at_60_c_ohm": 3.678255,
+      "bed_resistance_per_c_ohm": 0.012285,
+      "bed_voltage_v": 24.0,
+      "hotend_voltage_v": 24.0
+    },
+    "hotend_pid": {
+      "Kff": 0.57,
+      "Kp": 9.0,
+      "Ki": 0.2,
+      "Kd": 40.0,
+      "Ki_max": 100,
+      "Kpcf": 0.06
+    },
+    "bed_pid": {
+      "Kff": 2.5,
+      "Kp": 125.0,
+      "Ki": 0.0,
+      "Kd": 0.0,
+      "Ki_max": 60
+    },
+    "pid_functional_range_c": 25.0,
+    "temperature_compensation": {
+      "formula": "measured * factor + offset",
+      "hotend_0": [
+        1.0,
+        0.0
+      ],
+      "hotend_1": [
+        0.985,
+        0.75
+      ],
+      "bed_glass": [
+        1.0,
+        0.0
+      ]
+    },
+    "host_max_bed_temperature_c": 115
+  },
+  "wire": {
+    "header_hex": "ffff",
+    "sequence_min": 0,
+    "sequence_max": 254,
+    "payload_min_bytes": 1,
+    "payload_max_bytes": 96,
+    "crc16_input": "sequence, length, ASCII payload",
+    "crc16_wire_endianness": "big",
+    "control_responses": [
+      "o",
+      "r",
+      "q"
+    ],
+    "usable_planner_slots": 15,
+    "host_outstanding_receive_packets": 5,
+    "vendor_stale_command_queue_slots": 8,
+    "hotend_status_grammar": "Tn:current/target@powerppresenteenabledfraw/steps",
+    "bed_status_grammar": "Bcurrent/target@power"
+  },
+  "stock_firmware": {
+    "path": "usr/share/griffin/griffin/machines/jedi.hex",
+    "sha256": "448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65",
+    "data_bytes": 77942,
+    "address_end_exclusive": 77942
+  },
+  "stock_bootloader": {
+    "path": "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex",
+    "sha256": "9a60748949d154288dfcd4a5064bf3e52117b0480d714f16c7da3bb41ceec9a1",
+    "address_start": 253952,
+    "address_end_exclusive": 255916,
+    "application_max_bytes": 253952,
+    "reserved_flash_end_exclusive": 262144,
+    "default_fuses_hex": "FFD0FD",
+    "flash_page_bytes": 256,
+    "individual_printer_state_verified": false
+  },
+  "upstream_collisions": {
+    "G30": "UM3 capacitive probe vs upstream generic single probe",
+    "G31": "UM3 capacitive baseline vs upstream sled dock/undock when enabled",
+    "M143": "UM3 print-head LED vs upstream cooler target maximum when enabled",
+    "M145": "UM3 disallow hotend removal vs upstream LCD preheat presets",
+    "M149": "UM3 print-core serial vs upstream temperature units",
+    "M150": "UM3 print-core EEPROM page vs upstream color LEDs",
+    "M290": "UM3 power budget vs upstream babystepping",
+    "M301/M304": "UM3 F feed-forward, lowercase i integral limit, C fan compensation, R functional range and PID cadence vs upstream PID interface",
+    "M401": "UM3 quick-stop/position reply vs upstream deploy probe",
+    "M405/M406/M407": "UM3 flow sensor enable/reset/raw read vs upstream filament-width controls",
+    "M204/M205/M218/M907": "Similar commands require legacy parameter, coordinate and current-unit preservation"
+  },
+  "entries": [
+    {
+      "id": "source_completeness",
+      "status": "blocked",
+      "required": true,
+      "reason": "Published UM3 main and added drivers reference missing definitions; thermal, pin, planner, stepper, serial and watchdog files remain unchanged from UM2 parent. A stock source baseline cannot be built faithfully from this tree.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp",
+        "vendor:Marlin/Configuration.h",
+        "vendor:Marlin/pins.h",
+        "vendor:Marlin/temperature.cpp",
+        "vendor:Marlin/planner.cpp",
+        "vendor:Marlin/stepper.cpp"
+      ]
+    },
+    {
+      "id": "transport_primitive",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Wire primitive and boundary checks require production-code tests against stock host packet and CRC behavior.",
+      "evidence": [
+        "usr/share/griffin/griffin/printer/drivers/marlin/osiHelpers/networkPacket.py",
+        "vendor:Marlin/SerialProtocol.cpp",
+        "vendor:Marlin/crc16.cpp",
+        "vendor:Marlin/crc8.cpp"
+      ]
+    },
+    {
+      "id": "transport_integration",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Packet receiver, 96-byte payload plus terminator storage, dispatch, asynchronous output, resend RX discard, sequence/ack timing and planner-credit reporting must integrate with the modern production queue.",
+      "evidence": [
+        "usr/share/griffin/griffin/printer/drivers/marlin/transportLayer.py",
+        "vendor:Marlin/SerialProtocol.cpp",
+        "vendor:Marlin/MarlinSerial.cpp",
+        "vendor:Marlin/Marlin_main.cpp"
+      ]
+    },
+    {
+      "id": "board_pins",
+      "status": "blocked",
+      "required": true,
+      "reason": "Schematic audit corroborates stock signals, USART2 and printhead peripherals, but firmware BOARD_REV_I assumptions differ from the published 1548-I divider/safety circuit. Exact production revision mapping and assembly remain unresolved; do not enable outputs from the title alone.",
+      "evidence": [
+        "docs/ultimaker3/hardware.md",
+        "vendor:Marlin/Board.cpp",
+        "vendor:Marlin/pins.h",
+        "https://github.com/Ultimaker/Ultimaker3/tree/master/PCB%20files"
+      ]
+    },
+    {
+      "id": "thermal_conversion",
+      "status": "blocked",
+      "required": true,
+      "reason": "Added ADS101X reads differential signed 12-bit samples at +/-0.256 V full scale; stale temperature core and table 20 implement the UM2 INA826 path. Exact stock UM3 acquisition channel, conversion, calibration application, saturation and fault behavior remain unresolved.",
+      "evidence": [
+        "vendor:Marlin/temperature_ADS101X.cpp",
+        "vendor:Marlin/temperature.cpp",
+        "vendor:Marlin/thermistortables.h",
+        "usr/share/griffin/griffin/machines/um3.json"
+      ]
+    },
+    {
+      "id": "thermal_control",
+      "status": "blocked",
+      "required": true,
+      "reason": "Main requires undefined per-hotend PID, power-budget, presence and removal-state objects. Recover control cadence and apply budget/interlocks to every output path; stock host PID defaults alone do not establish runtime behavior.",
+      "evidence": [
+        "vendor:Marlin/temperature.h",
+        "vendor:Marlin/temperaturePID.cpp",
+        "vendor:Marlin/PowerBudgetManagement.cpp",
+        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py"
+      ]
+    },
+    {
+      "id": "safety",
+      "status": "blocked",
+      "required": true,
+      "reason": "Board revision I uses safety-pin output sequencing; Stop.h and stale Marlin.h reason definitions conflict. Verify relay, sensor faults, endstops, watchdog, timeout and recovery behavior for stock hardware.",
+      "evidence": [
+        "vendor:Marlin/Board.cpp",
+        "vendor:Marlin/Stop.cpp",
+        "vendor:Marlin/Stop.h",
+        "vendor:Marlin/Marlin.h",
+        "vendor:Marlin/watchdog.cpp"
+      ]
+    },
+    {
+      "id": "motion",
+      "status": "blocked",
+      "required": true,
+      "reason": "Missing planner-space, interrupt and runtime direction interfaces; negative rounded per-tool XYZ offsets are stored in steps but retained planner does not implement those semantics. Verify logical vs physical motion, homing, limits, timing and actual-position responses.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp",
+        "vendor:Marlin/planner.cpp",
+        "vendor:Marlin/stepper.cpp",
+        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py"
+      ]
+    },
+    {
+      "id": "probe",
+      "status": "blocked",
+      "required": true,
+      "reason": "Capacitive algorithm constants are missing from UM3 configuration. Host probe procedure does not establish AVR sample/filter thresholds, step sampling and stop latency.",
+      "evidence": [
+        "vendor:Marlin/cap_sense_probe.cpp",
+        "vendor:Marlin/i2c_capacitance_FDC1004.cpp",
+        "vendor:Marlin/Configuration.h",
+        "usr/share/griffin/griffin/machines/um3.json"
+      ]
+    },
+    {
+      "id": "print_core_eeprom",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Preserve DS2482/DS2431 serial and EEPROM read/write behavior, validation, returned hex formatting, presence and removal policy.",
+      "evidence": [
+        "vendor:Marlin/i2c_onewire_ds2482.cpp",
+        "vendor:Marlin/oneWireDS2431_eeprom.cpp",
+        "vendor:Marlin/Marlin_main.cpp"
+      ]
+    },
+    {
+      "id": "i2c_fans_lighting",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Port nonblocking I2C priorities, communication failures, PCA9635/PCA9632 lighting and fan behavior without interrupt or timer ownership conflicts.",
+      "evidence": [
+        "vendor:Marlin/i2c_driver.cpp",
+        "vendor:Marlin/fan_driver.cpp",
+        "vendor:Marlin/pca9635_driver.cpp",
+        "vendor:Marlin/led_rgbw_pca9632.cpp"
+      ]
+    },
+    {
+      "id": "host_runtime_configuration",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "On connect stock host sends M115/M80 then forces all property links. Preserve host-owned calibration, geometry, settings and temperature coefficients; no modern EEPROM override.",
+      "evidence": [
+        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
+        "usr/share/griffin/griffin/printer/drivers/marlin/osiHelpers/propertyLink.py",
+        "usr/share/griffin/griffin/machines/um3.json",
+        "usr/share/griffin/griffin/machines/9511.json"
+      ]
+    },
+    {
+      "id": "updater_compatibility",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Stock startup verifies and may overwrite MCU firmware from configured jedi.hex. Installation must preserve backup/calibration and replace the configured image; document stock update rollback behavior and verify image layout.",
+      "evidence": [
+        "usr/share/griffin/griffin/machines/um3.json",
+        "usr/share/griffin/griffin/printer/procedures/initialization/initiateHardwareInitialization.py",
+        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/firmwareUpdateBase.py",
+        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py"
+      ]
+    },
+    {
+      "id": "avr_build_memory",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Dedicated target must compile with verified pins/sensors, reserve application flash below 0x3e000, report SRAM with stack/interrupt headroom, and emit identified artifacts. Upstream smoke build is insufficient.",
+      "evidence": [
+        "vendor:Marlin/CMakeLists.txt",
+        "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex",
+        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json"
+      ]
+    },
+    {
+      "id": "offline_acceptance",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Run stock-host-derived initialization, calibration, probing, heating, tool change, stop and recovery scenarios against production compatibility code and mocked hardware; every required inventory row must be verified.",
+      "evidence": [
+        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
+        "usr/share/griffin/griffin/machines/um3.json",
+        "usr/share/griffin/griffin/machines/9511.json"
+      ]
+    },
+    {
+      "id": "hardware_acceptance",
+      "status": "unimplemented",
+      "required": false,
+      "reason": "No printer is available. Before any drop-in claim, verify installed host/board revision, back up firmware/calibration and stage cold startup, sensors, homing, probing, heaters and dual-material tests.",
+      "evidence": [
+        "user:stock UM3 Extended unavailable for hardware tests"
+      ]
+    },
+    {
+      "id": "commands_motion_core",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Modern equivalents exist; compare legacy units, parameters, homing/error behavior, flow factors, offsets and coordinate ownership before accepting.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G28",
+        "G90",
+        "G91",
+        "G92",
+        "M17",
+        "M18",
+        "M84",
+        "M82",
+        "M83",
+        "M92",
+        "M119",
+        "M201",
+        "M202",
+        "M203",
+        "M204",
+        "M205",
+        "M206",
+        "M218",
+        "M220",
+        "M221",
+        "M400",
+        "Tn"
+      ],
+      "disposition": "upstream_candidate"
+    },
+    {
+      "id": "commands_probe",
+      "status": "blocked",
+      "required": true,
+      "reason": "Capacitive probing constants and motion/sampling integration remain unresolved.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "G30",
+        "G31",
+        "M310",
+        "M311",
+        "M312",
+        "M313",
+        "M314"
+      ],
+      "disposition": "blocked"
+    },
+    {
+      "id": "commands_power_and_safety",
+      "status": "blocked",
+      "required": true,
+      "reason": "Thermal, relay, removal and safety integration are unresolved; preserve extended status, power/PID/current units and error mapping.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M80",
+        "M81",
+        "M104",
+        "M105",
+        "M140",
+        "M144",
+        "M145",
+        "M290",
+        "M291",
+        "M292",
+        "M301",
+        "M302",
+        "M304",
+        "M907",
+        "M998",
+        "M999"
+      ],
+      "disposition": "blocked"
+    },
+    {
+      "id": "commands_peripherals",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Pin protection, fan/light controllers and print-core EEPROM interfaces need dedicated verified handlers.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M42",
+        "M106",
+        "M107",
+        "M142",
+        "M143",
+        "M149",
+        "M150",
+        "M151"
+      ],
+      "disposition": "unimplemented"
+    },
+    {
+      "id": "commands_status",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Exact response fields and startup identification need comparison with stock host parsing.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M114",
+        "M115"
+      ],
+      "disposition": "unimplemented"
+    },
+    {
+      "id": "commands_quickstop",
+      "status": "blocked",
+      "required": true,
+      "reason": "Vendor aborts planned motion and returns real positions; modern Marlin M401 deploys a probe.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M401"
+      ],
+      "disposition": "blocked"
+    },
+    {
+      "id": "commands_flow",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Stock UM3 has no flow sensor; M405 disable still comes from host property links. Other maintenance commands require audit before declaring not applicable.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M405",
+        "M406",
+        "M407",
+        "M408"
+      ],
+      "disposition": "unimplemented"
+    },
+    {
+      "id": "commands_runtime_geometry",
+      "status": "blocked",
+      "required": true,
+      "reason": "Host runtime movement bounds/directions must affect planner, stepper and homing consistently.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M12000",
+        "M12001",
+        "M12004"
+      ],
+      "disposition": "blocked"
+    },
+    {
+      "id": "commands_temperature_compensation",
+      "status": "blocked",
+      "required": true,
+      "reason": "Host sends measured*factor+offset parameters, but stale thermal engine never applies them.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M12005",
+        "M12006"
+      ],
+      "disposition": "blocked"
+    },
+    {
+      "id": "commands_board_debug",
+      "status": "unimplemented",
+      "required": true,
+      "reason": "Verify board-ID responses; TMC2130 register access is only for non-stock/newer boards and must not initialize stock outputs.",
+      "evidence": [
+        "vendor:Marlin/Marlin_main.cpp"
+      ],
+      "commands": [
+        "M12003",
+        "M12010"
+      ],
+      "disposition": "unimplemented"
+    }
+  ],
+  "limitations": [
+    "Static package/source inspection only; no stock firmware execution or physical printer testing.",
+    "SHA-256 pins inspected package bytes but does not independently verify vendor signature.",
+    "Candidate upstream command implementations are not verified UM3 compatibility.",
+    "Host defaults do not resolve AVR thermal conversion, timing, pin maps or safety logic."
+  ]
+}

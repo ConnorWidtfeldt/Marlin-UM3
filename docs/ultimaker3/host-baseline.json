@@ -1,0 +1,205 @@
+{
+  "avr_package_version": "2019.01.27",
+  "extended_overlay": {
+    "inherit": "um3.json",
+    "properties": {
+      "build_volume": {
+        "x": 215,
+        "y": 215,
+        "z": 310
+      },
+      "machine_type_name": "Ultimaker 3 Extended",
+      "movement_volume": {
+        "max": {
+          "x": 215,
+          "y": 215,
+          "z": 310
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      }
+    }
+  },
+  "host_defaults": {
+    "default_axis_inverted": {
+      "e0": true,
+      "e1": false,
+      "x": true,
+      "y": false,
+      "z": true
+    },
+    "default_bed_pid": {
+      "Kd": 0.0,
+      "Kff": 2.5,
+      "Ki": 0.0,
+      "Ki_max": 60,
+      "Kp": 125.0
+    },
+    "default_hotend_pid": {
+      "Kd": 40.0,
+      "Kff": 0.57,
+      "Ki": 0.2,
+      "Ki_max": 100,
+      "Kp": 9.0,
+      "Kpcf": 0.06
+    },
+    "default_motor_current": {
+      "e": 1250,
+      "xy": 1300,
+      "z": 1300
+    },
+    "default_power_budget_management": {
+      "bed_resistance_per_degree": 0.012285,
+      "bed_voltage": 24.0,
+      "hotend_voltage": 24.0,
+      "idle_power_consumption": 46,
+      "max_power_per_hotend_slot": 75,
+      "nominal_bed_resistance": 3.678255,
+      "total_power_budget": 221
+    },
+    "default_steps_per_mm": {
+      "e": 369.0,
+      "x": 80.0,
+      "y": 80.0,
+      "z": 400.0
+    },
+    "feature_bed_leveling_sensor": true,
+    "feature_filament_flow_sensor": false,
+    "hotend_count": 2,
+    "temperature_compensation_build_plate": {
+      "glass": {
+        "factor": 1.0,
+        "offset": 0.0
+      }
+    },
+    "temperature_compensation_hotends": {
+      "0": {
+        "factor": 1.0,
+        "offset": 0.0
+      },
+      "1": {
+        "factor": 0.985,
+        "offset": 0.75
+      }
+    }
+  },
+  "host_version": "5.3.0",
+  "members": {
+    "etc/jedi_version": {
+      "sha256": "d92973800706e6107fce68570df8589348db4a4127663e491f5bc2ff630f1450",
+      "size": 6
+    },
+    "etc/ultimaker_firmware": {
+      "sha256": "5629c2a5eb09a6d44c87c7d582f4dad3a472b9259aafeebbcfcf4b0a9cc63df5",
+      "size": 42
+    },
+    "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex": {
+      "sha256": "9a60748949d154288dfcd4a5064bf3e52117b0480d714f16c7da3bb41ceec9a1",
+      "size": 5578
+    },
+    "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py": {
+      "sha256": "82a1260e48632c777ba5409185adf8ce635c58652c5fefa689bf54f1f462e459",
+      "size": 4650
+    },
+    "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json": {
+      "sha256": "73b24db97eb38e8af324af30069b5cef0be68321f40154334eaf0975df223cf5",
+      "size": 290
+    },
+    "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/firmwareUpdateBase.py": {
+      "sha256": "5422e6f18c07f2594c071a170510ec2d534ffcd881efb82e8d0a9bbdffb5871b",
+      "size": 8726
+    },
+    "usr/share/griffin/griffin/machines/9066.json": {
+      "sha256": "b01a746c63fb9bcc4b7ab32aaba2faed9ec5b34b79268dc05f0bdcb55c2f8d38",
+      "size": 90
+    },
+    "usr/share/griffin/griffin/machines/9511.json": {
+      "sha256": "fddad9e4682ec9c7486e78f3e8473f1a20984b646371f2853a348350b433ceb1",
+      "size": 300
+    },
+    "usr/share/griffin/griffin/machines/jedi.hex": {
+      "sha256": "448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65",
+      "size": 219250
+    },
+    "usr/share/griffin/griffin/machines/um3.json": {
+      "sha256": "99b27da6b8cce6d610c2938e82ca7ae20bee1077c73eee9a0d85a331b1512a11",
+      "size": 30426
+    },
+    "usr/share/griffin/griffin/math/crc16.py": {
+      "sha256": "852439f2900dd1acb914cf3729b6c1de4526ded70d0c98273e690adbf5be6dbc",
+      "size": 4176
+    },
+    "usr/share/griffin/griffin/math/crc8.py": {
+      "sha256": "ce5b27bba693a150d7015c812beb859de94de19aada385573c9f4d196157840c",
+      "size": 2918
+    },
+    "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py": {
+      "sha256": "aa8cf744cdf417cb215ab21b46a105a67bcf586b6206866dc8416c988088592d",
+      "size": 25854
+    },
+    "usr/share/griffin/griffin/printer/drivers/marlin/dataLinkLayer.py": {
+      "sha256": "f748707d965013e28e1c659e540ae3b163d6bb06b49a08c882a02db3c15406e5",
+      "size": 4931
+    },
+    "usr/share/griffin/griffin/printer/drivers/marlin/osiHelpers/networkPacket.py": {
+      "sha256": "166cf9ed92132ee11748800e42fa496878a91bee733d4fbbb0b585783beb428f",
+      "size": 5031
+    },
+    "usr/share/griffin/griffin/printer/drivers/marlin/transportLayer.py": {
+      "sha256": "fa39e4e13f4cc1eb7c0e07e7258d6afb94daba5897c95713098aecbe28bef716",
+      "size": 31539
+    },
+    "usr/share/griffin/griffin/printer/drivers/protocolDataLine.py": {
+      "sha256": "fb8a59fe53dbc0ea1eb7c99253da7d4dbce13e77493be997a7b7cd334cded097",
+      "size": 2381
+    },
+    "usr/share/griffin/griffin/printer/heatableObject/heatableObject.py": {
+      "sha256": "1ee527afa66e00530ba8cec247c3a8f70021123e2eeeca6bf84c04da96c6db1b",
+      "size": 8887
+    },
+    "usr/share/griffin/griffin/printer/procedures/initialization/initiateHardwareInitialization.py": {
+      "sha256": "85cc7e464c58eaf044288512c1a1aa2f71c8b9881d95e1bbdb830c112c9594dc",
+      "size": 4076
+    },
+    "var/lib/dpkg/status": {
+      "sha256": "2cf7f20aaa0684f2c71582626d3593c4f3627e2a9a5087c5a3b20d1b7a37c4f7",
+      "size": 238987
+    }
+  },
+  "motion_controller": {
+    "dummy": false,
+    "initialization": {
+      "class": "ucFirmwareUpgrade.avr.MultiStageProgrammer",
+      "firmware": "/usr/share/griffin/griffin/machines/jedi.hex",
+      "parameters": {
+        "bootloader": {
+          "ATMega1280": "bootloader-atmega1280-uart250000-2.hex",
+          "ATMega2560": "bootloader-atmega2560-uart250000-2.hex"
+        },
+        "port": "/dev/ttyS1",
+        "reset": "/dev/gpio/avr_reset",
+        "softspi": "/dev/gpio/avr",
+        "speed": "250000"
+      }
+    },
+    "logging": {
+      "color_support": false,
+      "enable": false,
+      "output": "/tmp/marlin_serial.log"
+    }
+  },
+  "package_sha256": "5599f1108837fc365b4f5fd567d1561db749a7b28f7befad1e3117d75b182df2",
+  "stock_application": {
+    "data_bytes": 77942,
+    "first": 0,
+    "last": 77941
+  },
+  "stock_bootloader": {
+    "data_bytes": 1964,
+    "first": 253952,
+    "last": 255915
+  }
+}

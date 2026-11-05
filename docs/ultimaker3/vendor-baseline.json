@@ -1,0 +1,81 @@
+{
+  "files": {
+    "Marlin/Configuration.h": {
+      "parent_blob": "8838b9b3a6fe65a5dfddbf480106e2f507a2357b",
+      "unchanged_from_um2": true,
+      "vendor_blob": "8838b9b3a6fe65a5dfddbf480106e2f507a2357b"
+    },
+    "Marlin/Configuration_adv.h": {
+      "parent_blob": "06d5f5bf40287b02d343eeae04793c004e232456",
+      "unchanged_from_um2": true,
+      "vendor_blob": "06d5f5bf40287b02d343eeae04793c004e232456"
+    },
+    "Marlin/Marlin.h": {
+      "parent_blob": "76f5c25a8870c9c03848bcc21220fd942c228266",
+      "unchanged_from_um2": true,
+      "vendor_blob": "76f5c25a8870c9c03848bcc21220fd942c228266"
+    },
+    "Marlin/MarlinSerial.cpp": {
+      "parent_blob": "40dbb363adfc9e62fa5f303fb73f19c8d2068f92",
+      "unchanged_from_um2": true,
+      "vendor_blob": "40dbb363adfc9e62fa5f303fb73f19c8d2068f92"
+    },
+    "Marlin/MarlinSerial.h": {
+      "parent_blob": "9675941450d316cd9802b117cda9fb170c7dd02d",
+      "unchanged_from_um2": true,
+      "vendor_blob": "9675941450d316cd9802b117cda9fb170c7dd02d"
+    },
+    "Marlin/pins.h": {
+      "parent_blob": "e4deef60e04e65e7186e5d0ffa0252e0a1b21808",
+      "unchanged_from_um2": true,
+      "vendor_blob": "e4deef60e04e65e7186e5d0ffa0252e0a1b21808"
+    },
+    "Marlin/planner.cpp": {
+      "parent_blob": "23a19fea381803a0b6e41030f9865a5db9bdce29",
+      "unchanged_from_um2": true,
+      "vendor_blob": "23a19fea381803a0b6e41030f9865a5db9bdce29"
+    },
+    "Marlin/planner.h": {
+      "parent_blob": "f707a43f53862749eb4e1f1083c9a89eb34f932b",
+      "unchanged_from_um2": true,
+      "vendor_blob": "f707a43f53862749eb4e1f1083c9a89eb34f932b"
+    },
+    "Marlin/stepper.cpp": {
+      "parent_blob": "11f42a35d50892c312da79fc0387835e71f7547d",
+      "unchanged_from_um2": true,
+      "vendor_blob": "11f42a35d50892c312da79fc0387835e71f7547d"
+    },
+    "Marlin/stepper.h": {
+      "parent_blob": "014bfbb1cb04e6bda9d251c9602a6b633d30e67b",
+      "unchanged_from_um2": true,
+      "vendor_blob": "014bfbb1cb04e6bda9d251c9602a6b633d30e67b"
+    },
+    "Marlin/temperature.cpp": {
+      "parent_blob": "c736495a634c13dded6ddc0a4cec685ae55e9506",
+      "unchanged_from_um2": true,
+      "vendor_blob": "c736495a634c13dded6ddc0a4cec685ae55e9506"
+    },
+    "Marlin/temperature.h": {
+      "parent_blob": "fe5cce99136dfb95c65cf921901fb25a656be84d",
+      "unchanged_from_um2": true,
+      "vendor_blob": "fe5cce99136dfb95c65cf921901fb25a656be84d"
+    },
+    "Marlin/thermistortables.h": {
+      "parent_blob": "e248ab4b53b3fe55b5e3fcfd0e3dc888f2ceedbd",
+      "unchanged_from_um2": true,
+      "vendor_blob": "e248ab4b53b3fe55b5e3fcfd0e3dc888f2ceedbd"
+    },
+    "Marlin/watchdog.cpp": {
+      "parent_blob": "f2261d7d27d5a125f8f9da9d9b68c925e63b0867",
+      "unchanged_from_um2": true,
+      "vendor_blob": "f2261d7d27d5a125f8f9da9d9b68c925e63b0867"
+    },
+    "Marlin/watchdog.h": {
+      "parent_blob": "03bdc156d1926d022369b7392b84c1905395985a",
+      "unchanged_from_um2": true,
+      "vendor_blob": "03bdc156d1926d022369b7392b84c1905395985a"
+    }
+  },
+  "um2_parent": "8698fb6ad43490ce452d044330f9ca3a17027dfc",
+  "vendor_revision": "4545818112027387f09e87f930117ab8f3804327"
+}
