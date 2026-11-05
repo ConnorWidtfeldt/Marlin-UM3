@@ -35,6 +35,26 @@ int main() {
     assert(offset == 123);
   }
 
+  const float vx[4]={100,0,0,0},vy[4]={0,100,0,0},vze[4]={0,0,10,25};
+  assert(fabsf(junction_speed(vx,vy,100,100,3,20,0.4f,5)-14.142136f)<0.0001f);
+  assert(junction_speed(vx,vy,100,100,0,20,0.4f,5)==10);
+  assert(fabsf(junction_speed(vze,vx,100,100,3,20,0.4f,5)-4)<0.0001f);
+
+  const float fractional[4]={0.5f,-0.5f,1.5f,-1.9f};
+  const float unit_steps[4]={1,1,1,1};
+  const int32_t signed_offset[3]={-1440,20,-600};
+  int32_t physical[4]={};
+  assert(physical_target_steps(fractional,signed_offset,unit_steps,physical));
+  assert(physical[0]==1441 && physical[1]==-21 && physical[2]==602 && physical[3]==-1);
+  const int32_t sentinel_steps[4]={1,2,3,4};
+  memcpy(physical,sentinel_steps,sizeof(physical));
+  const float invalid_target[4]={0,0,INFINITY,0};
+  assert(!physical_target_steps(invalid_target,signed_offset,unit_steps,physical));
+  assert(!memcmp(physical,sentinel_steps,sizeof(physical)));
+  const float over_target[4]={2147483520.0f,0,0,0};
+  assert(!physical_target_steps(over_target,signed_offset,unit_steps,physical));
+  assert(!memcmp(physical,sentinel_steps,sizeof(physical)));
+
   const int32_t executed[4] = {9440, 8000, 4000, 3690};
   const int32_t tool1[3] = {-1440, 0, -600};
   const float calibrated[4] = {80, 80, 400, 369};

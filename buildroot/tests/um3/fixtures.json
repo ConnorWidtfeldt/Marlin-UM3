@@ -1,5 +1,5 @@
 {
-  "provenance": "Generated with unmodified NetworkPacket, Crc16 and Crc8 from official UM3 5.3.0.20211003; responses checked by ProtocolDataLine. Public UM3 MarlinSerial::println emits CRLF.",
+  "provenance": "Generated with unmodified NetworkPacket, Crc16 and Crc8 from official UM3 5.3.0.20211003; responses checked by ProtocolDataLine. These isolated formatter fixtures use host-accepted CRLF; the integrated stock-compatible frontend emits the verified shipped LF framing.",
   "source_sha256": {
     "griffin.math.crc16": "852439f2900dd1acb914cf3729b6c1de4526ded70d0c98273e690adbf5be6dbc",
     "griffin.math.crc8": "ce5b27bba693a150d7015c812beb859de94de19aada385573c9f4d196157840c",

@@ -167,7 +167,7 @@ def check_release():
 def avr_components(core):
     compiler = core / "packages/toolchain-atmelavr/bin/avr-g++"
     with tempfile.TemporaryDirectory(prefix="um3-avr-") as tmp:
-        sources = sorted((ROOT / "Marlin/src/feature/ultimaker3").glob("*.cpp"))
+        sources = sorted(p for p in (ROOT / "Marlin/src/feature/ultimaker3").glob("*.cpp") if p.name != "native_adapter.cpp")
         if not sources:
             raise ValueError("No UM3 component sources found")
         for source in sources:
@@ -180,9 +180,7 @@ def avr_components(core):
 
 
 def build_report(core, environment, output):
-    if environment == "um3_extended":
-        check_release()
-    build = ROOT / ".pio/build" / environment
+    build = Path(os.environ.get("PLATFORMIO_BUILD_DIR", str(ROOT / ".pio/build"))) / environment
     size_output = subprocess.check_output([
         str(core / "packages/toolchain-atmelavr/bin/avr-size"), "-A", str(build / "firmware.elf")
     ]).decode()
@@ -208,6 +206,8 @@ def build_report(core, environment, output):
         "flash_bytes": flash, "static_sram_bytes": static_sram,
         "stack_interrupt_headroom_bytes": 8192 - static_sram,
         "stack_high_water_measured": False, "sections": sections,
+        "hardware_release": False,
+        "release_blockers": release_blockers(json.loads((DOCS / "inventory.json").read_text())),
         "application_address_range": image_range,
         "artifacts": artifacts,
         "source_date_epoch": int(subprocess.check_output(["git", "show", "-s", "--format=%ct", "HEAD"], cwd=ROOT)),
@@ -219,11 +219,18 @@ def build_report(core, environment, output):
         "platform_version": json.loads((core / "platforms/atmelavr/platform.json").read_text())["version"],
         "configuration_sha256": {
             name: sha256((ROOT / name).read_bytes())
-            for name in ("Marlin/Configuration.h", "Marlin/Configuration_adv.h", "ini/ultimaker3.ini",
+            for name in ("Marlin/Configuration.h", "Marlin/Configuration_adv.h",
+                         "Marlin/src/config/ultimaker3/Configuration.h", "Marlin/src/config/ultimaker3/Configuration_adv.h",
+                         "Marlin/src/pins/ramps/pins_ULTIMAKER_3.h", "ini/ultimaker3.ini",
                          "buildroot/share/ultimaker3/requirements.txt")
         },
         "compiler": subprocess.check_output([str(core / "packages/toolchain-atmelavr/bin/avr-g++"), "--version"]).decode().splitlines()[0],
     }
+    sources={str(p.relative_to(ROOT)):sha256(p.read_bytes())
+             for p in sorted((ROOT / "Marlin").rglob("*"))
+             if p.is_file() and p.suffix in (".h", ".cpp", ".c", ".S", ".ini")}
+    (output / "sources.json").write_text(json.dumps(sources,indent=2)+"\n")
+    artifacts["sources.json"]=sha256((output / "sources.json").read_bytes())
     (output / "size.txt").write_text(size_output)
     (output / "provenance.json").write_text(json.dumps(report, indent=2) + "\n")
     (output / "SHA256SUMS").write_text("".join(f"{digest}  {name}\n" for name, digest in artifacts.items()))

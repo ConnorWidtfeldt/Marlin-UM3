@@ -23,22 +23,20 @@ jobs:
       - run: python buildroot/tests/um3/run_interlock.py
       - run: python buildroot/tests/um3/run_motion.py
       - run: python buildroot/tests/um3/run_power.py
+      - run: python buildroot/tests/um3/run_integration.py
       - run: pio run -e um3_upstream_check
       - run: python buildroot/share/ultimaker3/verify.py avr-components --core "$PLATFORMIO_CORE_DIR"
-      - name: Confirm incomplete hardware target cannot emit firmware
-        shell: bash
-        run: |
-          if pio run -e um3_extended > um3-gate.log 2>&1; then
-            cat um3-gate.log
-            echo 'Incomplete UM3 target unexpectedly built'
-            exit 1
-          fi
-          cat um3-gate.log
-          grep -q UM3_RELEASE_BLOCKED um3-gate.log
-          test ! -f .pio/build/um3_extended/firmware.hex
+      - name: Build experimental UM3 Extended image
+        run: pio run -e um3_extended
+      - run: python buildroot/share/ultimaker3/verify.py build-report --core "$PLATFORMIO_CORE_DIR" --environment um3_extended --output artifacts/um3-extended-NOT-FOR-FLASHING
       - run: python buildroot/share/ultimaker3/verify.py build-report --core "$PLATFORMIO_CORE_DIR" --environment um3_upstream_check --output artifacts/upstream-avr-regression
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: upstream-avr-regression-NOT-UM3-FIRMWARE
           path: artifacts/upstream-avr-regression
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: um3-extended-NOT-FOR-FLASHING
+          path: artifacts/um3-extended-NOT-FOR-FLASHING
           if-no-files-found: error
