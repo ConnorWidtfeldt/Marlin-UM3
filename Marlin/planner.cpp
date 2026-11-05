@@ -720,11 +720,6 @@ static FORCE_INLINE uint8_t moves_planned()
   return (block_buffer_head - block_buffer_tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1);
 }
 
-uint8_t movesplanned()
-{
-    return moves_planned();
-}
-
 uint8_t plan_buf_free_positions()
 {
     return (BLOCK_BUFFER_SIZE - 1) - moves_planned();

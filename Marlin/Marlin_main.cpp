@@ -1021,16 +1021,8 @@ static void process_command()
     case 18: // Compatibility: M18  - Disable all stepper motors; same as M84
     case 84: // M84  - Disable steppers until next move
       {
-        bool all_axis = !((code_seen(axis_codes[0])) || (code_seen(axis_codes[1])) || (code_seen(axis_codes[2]))|| (code_seen(axis_codes[3])));
-        if(all_axis)
-        {
-          st_synchronize();
-          disable_e0();
-          disable_e1();
-          disable_e2();
-          finishAndDisableSteppers();
-        }
-        else
+        bool any_axis = (code_seen(axis_codes[0])) || (code_seen(axis_codes[1])) || (code_seen(axis_codes[2])) || (code_seen(axis_codes[3]));
+        if(any_axis)
         {
           st_synchronize();
           if(code_seen('X')) disable_x();
@@ -1043,6 +1035,14 @@ static void process_command()
               disable_e2();
             }
           #endif
+        }
+        else
+        {
+          st_synchronize();
+          disable_e0();
+          disable_e1();
+          disable_e2();
+          finishAndDisableSteppers();
         }
       }
       break;

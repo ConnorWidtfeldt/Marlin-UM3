@@ -183,7 +183,7 @@
 	#define MSG_Z_MAX "z_max: "
 	#define MSG_M119_REPORT "Reporting endstop status"
 	#define MSG_ENDSTOP_HIT "TRIGGERED"
-	#define MSG_ENDSTOP_OPEN "open"
+	#define MSG_ENDSTOP_OPEN "OPEN"
 	#define MSG_HOTEND_OFFSET "Hotend offsets:"
 
 	#define MSG_SD_CANT_OPEN_SUBDIR "Cannot open subdir"

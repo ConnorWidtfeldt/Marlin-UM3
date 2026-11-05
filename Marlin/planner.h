@@ -71,7 +71,6 @@ void plan_set_e_position(const float &e);
 
 
 void check_axes_activity();
-uint8_t movesplanned(); // Legacy public API: buffered move count.
 uint8_t plan_buf_free_positions();  // return the number of free positions in the planner buffer.
 
 extern uint32_t minsegmenttime;

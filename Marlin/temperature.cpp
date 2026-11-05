@@ -189,7 +189,10 @@ void manage_heater()
   for (uint8_t e = 0; e < EXTRUDERS; e++)
   {
       // Stock ARM manage_heater 0x3462c..0x346f8: no S-line error-count logging gate.
-      pwr.setRequestedHeaterOutput(e, stop_heaters_pwm ? 0 : hotend_pid[e].update(current_temperature[e]));
+      if (stop_heaters_pwm)
+          pwr.setRequestedHeaterOutput(e, 0);
+      else
+          pwr.setRequestedHeaterOutput(e, hotend_pid[e].update(current_temperature[e]));
       nozzle_temperature_watchdog(e);
   }
   pwr.setRequestedBedOutput(heated_bed_pid.update(current_temperature_bed));
@@ -232,16 +235,19 @@ static void setHeaterOutput(int8_t heater, uint8_t output)
     {
         if (stop_heaters_pwm && output != PID_MAX)
             output = 0;
-        if (Board::getId() == Board::BOARD_2621B)
-            soft_pwm_bed = output / 2;
-        else
+        // Preserve the stock AVR standard-bed-first branch order (0x102f4).
+        if (Board::getId() != Board::BOARD_2621B)
             analogWrite(HEATER_BED_PIN, output);
+        else
+            soft_pwm_bed = output / 2;
         bed_heater_output_accumulator += output;
         bed_heater_output_accumulator_counter += 1;
     }
     else
     {
-        if (allow_temperature_sensor_errors[heater] || stop_heaters_pwm)
+        if (allow_temperature_sensor_errors[heater])
+            output = 0;
+        if (stop_heaters_pwm)
             output = 0;
         last_pwm_output[heater] = output;
         heater_output_accumulator[heater] += output;
@@ -425,14 +431,11 @@ void temperatureInit()
     SET_OUTPUT(HEATER_2_PIN);
   #endif
   #if defined(HEATER_BED_PIN) && (HEATER_BED_PIN > -1)
-    switch (Board::getId()) {
-    case Board::BOARD_2621B:
-        SET_OUTPUT(HEATER_BED_XL_PIN);
-        break;
-    default:
+    // Stock AVR 0x10438 branches to board 4; the standard bed path is first.
+    if (Board::getId() != Board::BOARD_2621B)
         SET_OUTPUT(HEATER_BED_PIN);
-        break;
-    }
+    else
+        SET_OUTPUT(HEATER_BED_XL_PIN);
   #endif
 
   // Set analog inputs

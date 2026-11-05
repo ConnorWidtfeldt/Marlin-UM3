@@ -79,8 +79,6 @@ set(ELF_FILE ${FIRMWARE_NAME}.elf)
 set(HEX_FILE ${FIRMWARE_NAME}.hex)
 
 add_executable(${ELF_FILE} ${SOURCES} ${ARDUINO_SOURCES})
-# Match the original UM2 Makefile: libm must precede the implicit libgcc scan.
-target_link_libraries(${ELF_FILE} m)
 if(DEFINED ENV{SOURCE_DATE_EPOCH})
     execute_process(COMMAND date -u -d "@$ENV{SOURCE_DATE_EPOCH}" "+%b %e %Y"
         OUTPUT_VARIABLE BUILD_DATE OUTPUT_STRIP_TRAILING_WHITESPACE RESULT_VARIABLE DATE_STATUS)
@@ -92,7 +90,6 @@ if(DEFINED ENV{SOURCE_DATE_EPOCH})
     target_compile_definitions(${ELF_FILE} PRIVATE "__DATE__=\"${BUILD_DATE}\"" "__TIME__=\"${BUILD_TIME}\"")
 endif()
 set_target_properties(${ELF_FILE} PROPERTIES
-	LINKER_LANGUAGE C
 	COMPILE_FLAGS "-mmcu=${AVR_MCU}"
 	LINK_FLAGS "-mmcu=${AVR_MCU} -Wl,--gc-sections"
 )
