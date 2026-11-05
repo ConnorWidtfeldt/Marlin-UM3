@@ -1,91 +1,95 @@
-# Docker build of the reconstructed stock UM3 baseline
+# Reproducible stock UM3 baseline
 
-This branch repairs the incomplete historical UM3 vendor source so it can be
-compiled and compared against the shipped AVR firmware. It is not the modern
-Marlin 2.1.2.9 port and is not a qualified replacement image.
+The reconstructed historical firmware now produces **exactly the official UM3
+5.3.0 `jedi.hex`**: the literal HEX file and all 77942 addressed flash bytes match.
+See [binary-equivalence.md](binary-equivalence.md) for the comparison, provenance
+and limits. This branch is separate from the modern Marlin 2.1.2.9 port.
 
-From this checkout, with Docker running:
+With Docker running, from this checkout:
 
 ```sh
 sh reconstruction/build.sh
+python3 -c "import json; assert json.load(open('artifacts/stock-comparison/provenance.json'))['stock_hex_identical']"
 ```
 
 An optional first argument selects the output directory. On Apple Silicon,
-Docker Desktop must support Linux AMD64 containers. No Arduino installation or
-AVR compiler is needed on the host. The image uses a pinned Ubuntu base and the
-SHA-256-verified official Arduino 1.0.5 SDK, including original AVR GCC 4.3.2.
-Image creation downloads packages and the SDK; the firmware compilation itself
-runs without networking, with read-only source/root filesystem, as the invoking
-user, with no attached devices or upload operation.
+Docker Desktop must support Linux AMD64 containers. The image uses a pinned
+Ubuntu base, Arduino 1.0.5 **core sources**, Debian/Atmel AVR GCC 4.8.1, binutils
+2.24 and avr-libc 1.8.0. Every compiler/library/SDK archive is SHA-256 locked in
+[toolchain.sha256](toolchain.sha256); download locations are in
+[toolchain.urls](toolchain.urls). No host Arduino installation is needed.
 
-Outputs under `artifacts/stock-comparison/` include the comparison HEX, ELF,
-linker map, disassembly, size report, checksums, source hashes, exact Docker image
-ID and tool versions. The image name includes `NOT-FOR-FLASHING`. A failed run
-clears the previous published output names before compiling, so an old HEX is not
-mistaken for a successful new build. Intermediate CMake files remain under
-`build/` for diagnosis.
+Image creation downloads packages; compilation runs without networking, with
+read-only source/root filesystem, as the invoking user, with no attached devices
+or upload operation. The build never reads the stock HEX or copies its bytes.
 
-Build date/time strings are fixed to the source commit's UTC timestamp, including
-with historical GCC versions that do not honor SOURCE_DATE_EPOCH themselves.
-The SDK/compiler and base image are pinned; host build-helper packages are
-installed from Ubuntu's repositories and recorded by the tool-version output.
-Cross-machine reproducibility must be assessed from generated checksums, not
-assumed from a successful build. The source dirty flag and full source hashes
-make local experimental modifications visible in the report.
+Outputs under `artifacts/stock-comparison/` include HEX, ELF, linker map,
+disassembly, size report, checksums, source hashes, Docker image ID and compiler
+package versions. `provenance.json` records the source commit/dirty state and
+`stock_hex_identical`, computed against the pinned official HEX SHA-256. The
+build retains a differing experimental image for diagnosis; CI requires this
+flag to be true. Failed builds clear old published artifact names first.
 
-The development budgets are 253952 application bytes (8 KiB stock bootloader
-reservation) and 6144 static SRAM bytes (at least 2 KiB remaining for stack and
-interrupts). Dynamic allocation and actual stack/interrupt high-water behavior
-are not established by those numbers. No hardware release flag is generated.
+The default `SOURCE_DATE_EPOCH=1548629527` restores the stock build strings
+`Jan 27 2019` and `22:52:07`; the original build timezone is unknown. This is
+separate from recorded source identity. Overriding it intentionally changes the
+HEX. Host CMake/make/Python packages come from Ubuntu repositories; their versions
+and exact Docker image are recorded. HEX reproducibility has been verified;
+cross-host ELF/debug-path identity has not.
 
-## What was repaired
+## Reconstruction evidence
 
-- [Configuration and shared declarations](configuration.md): replace stale UM2
-  interfaces with stock-binary-backed UM3 settings, verified pin names and
-  physical port aliases; retain host ownership of runtime calibration.
-- [Serial](serial.md): restore the shipped receive-ring layout, LF framing and
-  exact protocol diagnostics. The capacitive I2C functions already existed;
-  enabling the missing configuration exposes their real implementations.
-- [Motion](motion.md): restore complete planner/stepper implementations with
-  tool offsets, runtime directions, credits and quick-stop position recovery.
-- [Thermal](thermal.md): restore ADC conversion, PID objects, power budgeting,
-  presence/removal logic, PWM, fault counters and the hardware watchdog.
+- [Configuration and declarations](configuration.md): stock defaults, pin names,
+  physical port aliases and host ownership of runtime calibration.
+- [Serial](serial.md): receive-ring layout, LF framing and protocol diagnostics.
+- [Motion](motion.md): full planner/stepper behavior, tool offsets, runtime
+  directions, queue credits and quick-stop coordinate recovery.
+- [Thermal](thermal.md): conversion, PID, power budgeting, removal interlocks,
+  PWM, faults and watchdog.
+- [Compiler fingerprint](compiler-evidence.md): independent unchanged controls,
+  toolchain selection and the final linker trampoline-order correction.
 
-The reconstruction adapts GPL sibling S-line source only as identified candidate
-code, removing newer-machine differences where the stock UM3 binary disagrees.
-The ledgers distinguish independently corroborated behavior from code that still
-needs AVR comparison. No no-op driver or dummy safety implementation substitutes
-for missing behavior. The current board-revision/schematic discrepancy remains a
-hardware-acceptance blocker even if the source builds successfully.
+GPL sibling S-line source supplied candidates, checked against the shipped UM3
+instructions and corrected where behavior differed. Ordinary source compilation
+produces the match, without code padding, dummy implementations, binary patches
+or copying stock output into the artifact. Matching the linked UM3 image does
+not establish unused conditional source or original source-text identity.
 
-The integrated Docker build on 2026-11-05 passed with AVR GCC 4.3.2: 97428 bytes
-application flash and 5759 bytes static SRAM, leaving 2433 bytes for heap, stack
-and interrupts. The native serial sanitizer and report boundary checks pass.
-Those observations establish a linked comparison artifact, not stock binary
-equivalence or runtime memory safety. Clean-build checksums are retained with the
-local build artifacts. A Linux CI workflow is provided; a GitHub Actions run has
-not been verified.
+The matching image uses 77942 application flash bytes and 5501 static SRAM bytes,
+leaving 2691 bytes for heap, stack and interrupts. Development limits are 253952
+application bytes (8 KiB bootloader reservation) and 6144 static SRAM bytes.
+Stack/interrupt high-water usage has not been measured.
 
-Run the production serial sanitizer check separately with a native C++ compiler:
+Run the native checks separately:
 
 ```sh
-python3 reconstruction/run_serial_test.py
 python3 reconstruction/test_report.py
+python3 reconstruction/test_compare_hex.py
+python3 reconstruction/run_serial_test.py
 ```
 
-The modern `um3` branch has additional binary-replay math/state fixtures. Those
-checks apply to its isolated components; they do not by themselves test this
-branch's complete historical ISR, planner, thermal engine or hardware outputs.
+To independently compare an extracted official HEX, whose carrier digest is
+checked before comparison:
 
-The next acceptance work is comparing the linked historical baseline with stock
-AVR function bodies, constants, call targets and state transitions, calibrating
-compiler/options first. Matching source compilation is only the beginning of
-that comparison. Flashing, fuses, bootloader changes, host firmware installation
-and calibration changes are outside this build script.
+```sh
+python3 reconstruction/compare_hex.py /path/to/official/jedi.hex \
+  artifacts/stock-comparison/jedi-reconstructed-NOT-FOR-FLASHING.hex \
+  --output artifacts/stock-comparison/equivalence.json
+```
 
-The final historical linker fix uses `avr-gcc` and explicit `-lm`, matching the
-vendor UM2 Makefile's convention. The C++ link driver selected incompatible
-floating-point support ordering and failed with `R_AVR_13_PCREL` truncations.
-No math-library object was patched or substituted. The role of explicit `-lm`
-and library ordering is documented in the
-[AVR-LibC manual](https://avrdudes.github.io/avr-libc/avr-libc-user-manual-2.0.0/using_tools.html).
+The comparator checks checksums, extended addresses, overlapping records, holes,
+entry records and complete programmed-byte equality; it also reports literal
+file equality. It does not mask addresses or normalize away code differences.
+
+macOS and isolated Linux serial sanitizer/comparator checks passed. A Linux CI
+workflow enforces the exact stock HEX digest; a GitHub Actions run has not been
+verified. The initial GCC 4.3.2 build at commit `f0d92f0b6` remains in published
+history (97428 flash / 5759 SRAM); it was a compilation milestone and did not
+match stock. Its C-link-driver/libm workaround is unnecessary with the matching
+4.8.1 toolchain, so the original C++ link driver/library order is restored.
+
+No firmware has been installed or tested on a printer. The board-revision /
+schematic discrepancy remains a hardware-acceptance issue. No flashing, fuses,
+bootloader, host installation or calibration changes are performed by these
+scripts. The modern `um3` branch still requires integration and its separate
+release gate remains closed.

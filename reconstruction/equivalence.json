@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "hex_files_identical": true,
+  "flash_bytes_identical": true,
+  "entry_records_identical": true,
+  "stock": {
+    "data_bytes": 77942,
+    "first": 0,
+    "last": 77941,
+    "addressed_bytes_sha256": "dfbe21614187b24dd38e5fa1bda2dae0cb0ebe299098a602cdb773cf0551f55c",
+    "hex_sha256": "448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65"
+  },
+  "candidate": {
+    "data_bytes": 77942,
+    "first": 0,
+    "last": 77941,
+    "addressed_bytes_sha256": "dfbe21614187b24dd38e5fa1bda2dae0cb0ebe299098a602cdb773cf0551f55c",
+    "hex_sha256": "448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65"
+  },
+  "changed_shared_addresses": 0,
+  "stock_only_addresses": 0,
+  "candidate_only_addresses": 0,
+  "first_changed_addresses": [],
+  "scope": "Exact addressed-byte equality only; moved code is not classified as a behavioral difference."
+}

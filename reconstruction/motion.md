@@ -38,7 +38,7 @@ The candidate file SHA-256 values before adaptation are:
 | Behavior | Shipped ARM evidence | Reconstruction |
 | --- | --- | --- |
 | Planner initialization | `plan_init`, `0x2f9bc`: clear ring/position/history and call `reset_acceleration_rates` | Initialize all motion defaults at definition and calculate step accelerations at startup. |
-| Ring capacity | `plan_buf_free_positions`, `0x31074`: `15 - ((head-tail)&15)` | Implement host-used free-slot API, preserve 16-entry ring with one reserved slot, retain historical `movesplanned()` API. |
+| Ring capacity | `plan_buf_free_positions`, `0x31074`: `15 - ((head-tail)&15)` | Implement the host-used free-slot API and preserve the 16-entry ring with one reserved slot. The unused stale `movesplanned()` API is absent from the final reconstruction. |
 | Planner full wait | `plan_buffer_line`, `0x2fb08` | Service heaters and inactivity while waiting for room. Remove obsolete local LCD/lifetime dependencies. |
 | Tool coordinates | `plan_buffer_line`, `0x2fb08`; `plan_set_position`, `0x30e7c` | Round runtime XYZ millimeters to steps, then subtract selected tool's integer XYZ offsets. E is truncated to steps and receives no tool offset. Remove stale volumetric conversion. |
 | Extrusion multiplier | `plan_buffer_line`, `0x2fb08`: global scalar, divide step count by 100 | Use UM3's scalar `extrudemultiply`, matching the retained command dispatcher. |
@@ -86,6 +86,34 @@ An arc can leave the permitted region despite having endpoints inside it; that
 is a limitation of the recovered stock behavior, and requires separate review
 before any future modern-port policy is chosen.
 
+## M18/M84 source-form reconstruction
+
+After compiler and library-link calibration, the remaining `loop()` instruction
+difference was traced to the shared M18/M84 handler, rather than a changed set or
+order of M-code cases. The stock all-axis disable block is at AVR
+`0x7370–0x738c`: synchronize, disable E0/E1, finish/disable all steppers, then
+branch to the common command completion at `0x7100`. The first reconstructed
+form placed those same actions at `0x5914–0x5932`, with command completion at
+`0x711c`. The stock E-axis predicate at `0x590c` branches to the selected-axis
+path at `0x732e` or jumps to the all-axis block. The original reconstruction's
+corresponding predicate was at `0x590e` and fell through to the all-axis block.
+
+A comparison of complete basic-block instruction bodies found only this moved
+disable block and its dependent branch-range changes. For example, the M206
+handler-dispatch branch at `0x4ee2` became a four-byte `jmp` instead of the
+stock two-byte `rjmp` as the extra block moved its target. The flash region
+`0x21a–0x396` contains linker-generated four-byte JMP trampolines for many
+functions; it is not an M-code switch jump table.
+
+The reconstruction now expresses the handler with a positive `any_axis`
+predicate, selected-axis actions in the first arm, and all-axis actions in the
+`else` arm. It preserves the exact X/Y/Z/E `code_seen` short-circuit order,
+actions, and conditional compilation. This is an equivalent C++ source form
+guided by observed stock control flow, not a claim to have recovered the original
+spelling. Compiling this form with the calibrated toolchain reproduces **every
+byte of the entire `loop()` function**, AVR `0x4128–0x73c9` (12,962 bytes), with
+SHA-256 `4da78e7bd260b3ad9522344f4884664a8e462fd55fc8a38497f13bc3172ec806`.
+
 ## Defaults and host ownership
 
 The simulator's named default arrays are also present as unique exact packed
@@ -99,7 +127,135 @@ individual machine and print-core calibration. It also supplies motor direction
 and current settings. The planner stores runtime values and introduces no EEPROM
 ownership or new calibration defaults.
 
-## Validation and remaining differences
+## Validation and exact-image result
+
+### Stock AVR instruction comparison
+
+The final `artifacts/stock-exact-a/equivalence.json` comparison verifies the
+**entire firmware image as exactly identical**: all 77,942 addressed bytes,
+address ranges, entry records, and the literal Intel HEX file agree with stock.
+There are zero changed, missing, or extra addresses. Both HEX files have SHA-256
+`448ca6fefbf9a8ed8bb3b29c444f76c7911ce0a346573e1d64a3ee882875ae65`.
+This includes every motion routine, the entire main loop, all linked call
+targets, and linker-generated trampolines. No byte patch, padding, operand mask,
+comparison normalization, or stock-byte substitution was used.
+
+The final linker discrepancy was traced to an unused `movesplanned()` wrapper
+and declaration initially retained from the incomplete UM2-era planner API.
+The host and retained UM3 dispatcher use `plan_buf_free_positions()` instead;
+the packaged symbol-bearing simulator has no `movesplanned` symbol. Although
+linker garbage collection discarded the unused wrapper's 14-byte function
+section, that extra input section shifted BFD section IDs and changed the
+ordering of its generated trampoline hash table. Removing this unsupported dead
+API reproduced the stock trampoline order, resolving the final 172 differing
+bytes. This was source cleanup backed by symbol/caller and linker evidence,
+rather than an artificial change to the output binary.
+
+The initial calibrated AVR GCC **4.8.1 / Atmel 3.4.4** comparison verified the
+reconstructed motion implementation at instruction level: all **30 routines,
+14,332 bytes** have exactly the stock addresses, lengths, opcode bytes, relative
+branches, immediate constants, SRAM addresses, and indexed field offsets. The
+only differing bytes in these routines at that stage were absolute `CALL/JMP` target
+operands pointing to relocated mathematical-library functions. Their call
+identities and order agree under one consistent callee mapping. This stricter
+check does **not** mask register operands, data addresses, numeric constants, or
+relative branches.
+
+Nineteen routines at that stage were already wholly raw-byte identical, including the complete
+**3694-byte Timer 1 ISR**, stepper initialization, synchronization, executed
+position setters/getters, interrupt control, fan activity handling, planner
+initialization/free-space reporting, forward/reverse passes, and endstop flags.
+The other eleven differed only in the absolute library target operands described
+above. No change to the motion algorithms was warranted by that calibrated pass.
+The subsequent source-form, linker, and unused-API corrections produced the final
+whole-image result recorded above.
+
+The earlier comparisons below retain the diagnostic evidence showing why the
+compiler had to be calibrated before assigning differences to source.
+
+The first complete comparison uses reconstructed commit
+`f0d92f0b66833e9afe10262fbbc60371b780bcd8`, the unmodified `artifacts/clean-a`
+AVR GCC 4.3.2 output, and the stock AVR image identified above. The addresses in
+this table are **AVR byte addresses**, independently located through the stock
+AVR decompilation and call graph. Ghidra's `code:` function addresses are word
+addresses and must be doubled; function byte sizes must not be doubled.
+
+| Routine | Stock AVR address, bytes | `clean-a` address, bytes | Comparison |
+| --- | --- | --- | --- |
+| `mc_arc` | `0xc494`, 1562 | `0x11126`, 1782 | Arc segmentation and direct planner call topology agree; substantial arithmetic/register allocation differences remain. |
+| `calculate_trapezoid_for_block` | `0xcd5a`, 938 | `0x121d2`, 984 | Not byte-equivalent; numerical/control-flow equivalence is not established by size. |
+| `planner_reverse_pass_kernel` | `0xd104`, 244 | `0x11ed6`, 258 | Not byte-equivalent. |
+| `planner_reverse_pass` | `0xd1f8`, 124 | `0x11fd8`, 140 | Not byte-equivalent. |
+| `planner_forward_pass_kernel` | `0xd274`, 234 | `0x11d7e`, 244 | Not byte-equivalent. |
+| `planner_forward_pass` | `0xd35e`, 94 | `0x11e72`, 100 | Not byte-equivalent. |
+| `planner_recalculate_trapezoids` | `0xd3bc`, 274 | `0x125aa`, 304 | Not byte-equivalent. |
+| `planner_recalculate` | `0xd4ce`, 12 | `0x126da`, 14 | Both invoke reverse, forward, and trapezoid passes; tail-call generation differs. |
+| `check_axes_activity` | `0xd4da`, 156 | `0x12064`, 170 | Tail fan selection and 100 ms kickstart agree; register/call allocation differs. |
+| `plan_buffer_line` | `0xd576`, 4952 | `0x126e8`, 6026 | Not byte-equivalent; requires a calibrated compiler comparison and further instruction tracing. |
+| `plan_set_position` | `0xe8ce`, 460 | `0x11b76`, 520 | XYZ rounding and offset subtraction, E truncation, and stepper setter call agree; code generation differs. |
+| `plan_set_e_position` | `0xea9a`, 58 | `0x11b3a`, 60 | E multiplication/truncation and setter call agree; code generation differs. |
+| `plan_buf_free_positions` | `0xead4`, 16 | `0x11ac2`, 16 | Identical opcode/operand stream after identifying the relocated head/tail SRAM addresses. |
+| `set_extrude_min_temp` | `0xeae4`, 18 | `0x11ad2`, 18 | Identical instructions except relocated SRAM addresses. |
+| `reset_acceleration_rates` | `0xeaf6`, 144 | `0x11ae4`, 86 | Different loop/inlining decisions; no byte-equivalence claim. |
+| `plan_init` | `0xeb86`, 106 | `0x1210e`, 196 | Stock calls acceleration reset; GCC 4.3.2 inlines it in this build. |
+| `checkHitEndstops` | `0xebf0`, 280 | `0x1512e`, 310 | Not byte-equivalent. |
+| `isEndstopHit` | `0xed08`, 26 | `0x13e72`, 26 | Same three-flag boolean result; instruction ordering differs. |
+| `endstops_hit_on_purpose` | `0xed22`, 14 | `0x13e8c`, 14 | Identical instructions except relocated hit-flag SRAM addresses. |
+| `enable_endstops` | `0xed30`, 6 | `0x13e9a`, 6 | Identical instructions except relocated enable-flag SRAM address. |
+| `st_wake_up` | `0xed36`, 12 | `0x13ea0`, 12 | **Raw bytes identical.** |
+| Timer 1 ISR | `0xed42`, 3694 | `0x1428c`, 3746 | Not byte-equivalent; compiler allocation and timing still need separate qualification. |
+| `st_init` | `0xfbb0`, 164 | `0x13eac`, 168 | All GPIO/register actions align; reconstructed code reloads the Timer 3 register pointer with two extra `ldi` instructions. |
+| `st_synchronize` | `0xfc54`, 24 | `0x1418a`, 24 | Same head/tail loop and calls to the identified heater/inactivity functions, with relocated operands. |
+| `st_set_position` | `0xfc6c`, 154 | `0x141f0`, 156 | Same synchronize/atomic four-counter update; register allocation differs. |
+| `st_set_e_position` | `0xfd06`, 46 | `0x141c0`, 48 | Same synchronize/atomic E-counter update; register allocation differs. |
+| `st_get_position` | `0xfd34`, 28 | `0x13f54`, 36 | Same indexed atomic four-byte counter read; address/register calculations differ. |
+| `finishAndDisableSteppers` | `0xfd50`, 30 | `0x141a2`, 30 | First call target relocates; following **26 GPIO bytes identical**. |
+| `quickStop` | `0xfd6e`, 376 | `0x13fce`, 444 | Ring drain, selected XYZ offsets, unoffset E, and planner setter call agree; arithmetic/register allocation differs. |
+| `st_enable_interrupt` | `0xfee6`, 86 | `0x13f78`, 86 | **Raw bytes identical.** |
+
+Raw-byte SHA-256 checks, with no opcode or operand normalization:
+
+- Entire `st_enable_interrupt`, 86 bytes:
+  `c9f1b541c61684258fedc2042995c0c51d857579bcae08ca6474fc94b5dfecfd`.
+- Entire `st_wake_up`, 12 bytes:
+  `e3d05e338964b20b1fe7c76527fe43af0140b54e9fb6074e1a35171845f6e5d8`.
+- GPIO tail of `finishAndDisableSteppers`, stock `0xfd54`, 26 bytes:
+  `ec83ad8b544e3bd2dd988febe34b660bf3a8c97ad653097a445c300bb5148b49`.
+
+The stock AVR planner's block stride is `0x4d` (77 bytes), independently agreeing
+with the reconstructed AVR field layout and its 16-entry ring. This confirms an
+AVR layout fact rather than copying the ARM simulator's 84-byte padded layout.
+Matching after operand normalization is only a comparison aid: it is not a proof
+that every masked data or call address refers to the correct object. The matched
+small functions above also had their object/call identities inspected. No motion
+source changes were justified by the initial compiler-mismatched pass; the
+remaining large routines needed comparison under the calibrated stock compiler
+before differences could be assigned to source rather than code generation.
+
+An unchanged-source AVR GCC 4.9.2 / Atmel 3.5.3 candidate substantially reduces
+the discrepancy. Its trapezoid calculation, endstop reporting, and E-position
+setter have the same complete opcode/operand sequence after relocation
+identification. More broadly, **all 30 motion routines listed above have the
+same ordered sequence of external calls** under one consistent mapping of stock
+and reconstructed callees. This includes 135 calls in `plan_buffer_line`, 50 in
+`mc_arc`, 39 in trapezoid calculation, four in the Timer 1 ISR, and 13 in
+`quickStop`. The planner calls include 25 float multiplications, 20 float
+divisions, five rounds, five squares, and three square roots, alongside the same
+heater/inactivity wait, extrusion diagnostics, and final planner calls. This
+checks operations and call topology rather than inferring behavior from sizes.
+
+GCC 4.9.2 still produces 5350 bytes for `plan_buffer_line` versus 4952 stock,
+3732 versus 3694 for the ISR, and 408 versus 460 for `plan_set_position`.
+Instruction inspection shows repeated stock `lds/sts` accesses versus cached
+pointer `ld/std` accesses in the candidate, different register allocation, and
+different placement of loop bodies. The inspected motion data pointers differ
+by a consistent relocation of ten bytes, including steps/mm, tool offsets,
+planner head/tail, planned position, executed position, and current block.
+No out-of-place motion object or additional/omitted callee was established in
+that pass. These findings narrowed the work to compiler calibration and deeper
+instruction/branch comparison; they did not justify editing source merely to
+match a function size. The later raw-byte result above resolves those motion
+routine differences.
 
 `git diff --check` passed for the reconstructed motion files. Each of
 `planner.cpp`, `stepper.cpp`, and `motion_control.cpp` compiled independently for ATmega2560 at 16 MHz
@@ -111,12 +267,12 @@ stopped coordinates; they do not exercise this historical ISR or complete
 planner. Compilation establishes that the restored implementation is connected,
 not that it is safe to flash.
 
-The shared look-ahead/trapezoid source, AVR multiplication assembly, speed tables,
-and pin pulse execution remain candidate implementations where full
-instruction-by-instruction equivalence has not been established. ARM simulator
-instructions corroborate the operations above; ARM register simulation does not
-establish AVR interrupt latency or electrical timing. ARM and AVR also differ in
-`double` precision and ABI layout. Outstanding qualification includes comparing
-planned blocks and executed counters with stock AVR, queue saturation/cancellation
-under interrupts, minimum-step and zero-length edge cases, runtime direction and
-offset changes, stuck/missing endstops, and actual homing/probing behavior.
+The calibrated comparison now corroborates the reconstructed look-ahead,
+trapezoid, AVR multiplication, pin-pulse paths, and their exact linked call
+targets. The whole-image gate above also verifies the final linker-generated
+trampoline bytes. ARM register simulation alone does not establish AVR interrupt
+latency or electrical timing; the AVR comparison above supersedes it for the
+owned instruction paths. Hardware qualification remains separate, especially
+when transferring these behaviors to modern Marlin: queue saturation and
+cancellation under interrupts, minimum-step and zero-length edge cases, runtime
+direction/offset changes, stuck or missing endstops, and actual homing/probing.
