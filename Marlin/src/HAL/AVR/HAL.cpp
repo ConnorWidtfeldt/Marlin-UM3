@@ -82,7 +82,9 @@ void MarlinHAL::init() {
     OUT_WRITE(SERVO5_PIN, LOW);
   #endif
 
-  init_pwm_timers();   // Init user timers to default frequency - 1000HZ
+  #if DISABLED(UM3_COMPATIBILITY)
+    init_pwm_timers(); // UM3 retains Arduino 8-bit PWM; analogWrite and current calibration depend on it.
+  #endif
 }
 
 void MarlinHAL::reboot() {

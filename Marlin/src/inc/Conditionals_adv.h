@@ -368,6 +368,8 @@
     #define TEMP_SENSOR_0_MAX_TC_TMIN    0
     #define TEMP_SENSOR_0_MAX_TC_TMAX 1024
   #endif
+#elif ENABLED(UM3_COMPATIBILITY) && TEMP_SENSOR_0 == -8
+  #define TEMP_SENSOR_0_IS_UM3_ADS1015 1
 #elif TEMP_SENSOR_0 == -4
   #define TEMP_SENSOR_0_IS_AD8495 1
 #elif TEMP_SENSOR_0 == -1
@@ -411,6 +413,8 @@
       #error "If MAX6675 Thermocouple (-2) is used for TEMP_SENSOR_1 then TEMP_SENSOR_0 must match."
     #endif
   #endif
+#elif ENABLED(UM3_COMPATIBILITY) && TEMP_SENSOR_1 == -8
+  #define TEMP_SENSOR_1_IS_UM3_ADS1015 1
 #elif TEMP_SENSOR_1 == -4
   #define TEMP_SENSOR_1_IS_AD8495 1
 #elif TEMP_SENSOR_1 == -1

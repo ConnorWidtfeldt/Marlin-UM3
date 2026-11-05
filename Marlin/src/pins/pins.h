@@ -147,6 +147,8 @@
   #include "ramps/pins_AZTEEG_X3.h"                 // ATmega2560                           env:mega2560
 #elif MB(AZTEEG_X3_PRO)
   #include "ramps/pins_AZTEEG_X3_PRO.h"             // ATmega2560                           env:mega2560
+#elif MB(ULTIMAKER_3)
+  #include "ramps/pins_ULTIMAKER_3.h"              // ATmega2560                           env:um3_extended
 #elif MB(ULTIMAIN_2)
   #include "ramps/pins_ULTIMAIN_2.h"                // ATmega2560                           env:mega2560ext
 #elif MB(RUMBA)

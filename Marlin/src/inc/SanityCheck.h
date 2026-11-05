@@ -1981,7 +1981,7 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
  * Test Sensor & Heater pin combos.
  * Pins and Sensor IDs must be set for each heater
  */
-#if HAS_EXTRUDERS && !ANY_PIN(TEMP_0, TEMP_0_CS)
+#if HAS_EXTRUDERS && !ANY_PIN(TEMP_0, TEMP_0_CS) && !TEMP_SENSOR_0_IS_UM3_ADS1015
   #error "TEMP_0_PIN or TEMP_0_CS_PIN not defined for this board."
 #elif HAS_EXTRUDERS && !HAS_HEATER_0
   #error "HEATER_0_PIN not defined for this board."
@@ -1998,7 +1998,7 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #error "TEMP_SENSOR_1 MAX thermocouple requires TEMP_1_CS_PIN."
   #elif TEMP_SENSOR_1 == 0
     #error "TEMP_SENSOR_1 is required with 2 or more HOTENDS."
-  #elif !ANY_PIN(TEMP_1, TEMP_1_CS) && !TEMP_SENSOR_1_IS_DUMMY
+  #elif !ANY_PIN(TEMP_1, TEMP_1_CS) && !TEMP_SENSOR_1_IS_DUMMY && !TEMP_SENSOR_1_IS_UM3_ADS1015
     #error "TEMP_1_PIN or TEMP_1_CS_PIN not defined for this board."
   #endif
   #if HOTENDS > 2

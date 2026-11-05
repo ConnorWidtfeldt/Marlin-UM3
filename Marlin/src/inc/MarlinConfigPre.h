@@ -36,7 +36,11 @@
 
 #include "../core/macros.h"
 #include "../core/boards.h"
-#include "../../Configuration.h"
+#if ENABLED(UM3_COMPATIBILITY)
+  #include "../config/ultimaker3/Configuration.h"
+#else
+  #include "../../Configuration.h"
+#endif
 
 #ifdef CUSTOM_VERSION_FILE
   #if __has_include(STRINGIFY(../../CUSTOM_VERSION_FILE))
@@ -53,7 +57,11 @@
 #endif
 
 #include "../core/drivers.h"
-#include "../../Configuration_adv.h"
+#if ENABLED(UM3_COMPATIBILITY)
+  #include "../config/ultimaker3/Configuration_adv.h"
+#else
+  #include "../../Configuration_adv.h"
+#endif
 
 #include "Conditionals_adv.h"
 

@@ -83,6 +83,7 @@
 #define BOARD_ULTIMAKER_OLD           1122  // Ultimaker (Older electronics. Pre 1.5.4. This is rare)
 #define BOARD_AZTEEG_X3               1123  // Azteeg X3
 #define BOARD_AZTEEG_X3_PRO           1124  // Azteeg X3 Pro
+#define BOARD_ULTIMAKER_3             1199  // UM3 stock ATmega2560 (host-owned calibration)
 #define BOARD_ULTIMAIN_2              1125  // Ultimainboard 2.x (Uses TEMP_SENSOR 20)
 #define BOARD_RUMBA                   1126  // Rumba
 #define BOARD_RUMBA_RAISE3D           1127  // Raise3D N series Rumba derivative

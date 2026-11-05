@@ -171,7 +171,9 @@
 // More than one hotend...
 #if HOTENDS > 1
   #define HAS_MULTI_HOTEND 1
-  #define HAS_HOTEND_OFFSET 1
+  #if DISABLED(UM3_COMPATIBILITY) // UM3 applies host-supplied offsets in physical steps.
+    #define HAS_HOTEND_OFFSET 1
+  #endif
   #ifndef HOTEND_OFFSET_X
     #define HOTEND_OFFSET_X { 0 } // X offsets for each extruder
   #endif
