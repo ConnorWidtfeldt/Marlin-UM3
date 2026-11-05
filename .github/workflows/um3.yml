@@ -19,8 +19,12 @@ jobs:
       - run: python -m pip install -r buildroot/share/ultimaker3/requirements.txt
       - run: python buildroot/tests/um3/test_evidence.py
       - run: python buildroot/tests/um3/run.py
+      - run: python buildroot/tests/um3/run_thermal.py
+      - run: python buildroot/tests/um3/run_interlock.py
+      - run: python buildroot/tests/um3/run_motion.py
+      - run: python buildroot/tests/um3/run_power.py
       - run: pio run -e um3_upstream_check
-      - run: python buildroot/share/ultimaker3/verify.py avr-protocol --core "$PLATFORMIO_CORE_DIR"
+      - run: python buildroot/share/ultimaker3/verify.py avr-components --core "$PLATFORMIO_CORE_DIR"
       - name: Confirm incomplete hardware target cannot emit firmware
         shell: bash
         run: |

@@ -19,6 +19,7 @@ PACKAGE_SHA256 = "5599f1108837fc365b4f5fd567d1561db749a7b28f7befad1e3117d75b182d
 GRIFFIN = "usr/share/griffin/griffin/"
 BOOTLOADER = "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex"
 MEMBERS = [
+    "usr/bin/jedi-marlin-simulator",
     "etc/jedi_version", "etc/ultimaker_firmware", "var/lib/dpkg/status",
     GRIFFIN + "machines/um3.json", GRIFFIN + "machines/9511.json",
     GRIFFIN + "machines/jedi.hex",
@@ -43,6 +44,7 @@ STALE_FILES = [
 ]
 REQUIRED_IDS = set("""
 source_completeness transport_primitive transport_integration board_pins
+temperature_math pid_math thermal_interlocks power_budget_math motion_contracts
 thermal_conversion thermal_control safety motion probe print_core_eeprom
 i2c_fans_lighting host_runtime_configuration updater_compatibility
 avr_build_memory offline_acceptance commands_motion_core commands_probe
@@ -162,16 +164,19 @@ def check_release():
         raise ValueError("UM3_RELEASE_BLOCKED\n" + "\n".join(blockers))
 
 
-def avr_protocol(core):
+def avr_components(core):
     compiler = core / "packages/toolchain-atmelavr/bin/avr-g++"
     with tempfile.TemporaryDirectory(prefix="um3-avr-") as tmp:
-        subprocess.run([
-            str(compiler), "-mmcu=atmega2560", "-DF_CPU=16000000L", "-DUM3_COMPATIBILITY",
-            "-std=gnu++11", "-Os", "-Wall", "-Wextra", "-Werror", "-fstack-usage", "-c",
-            str(ROOT / "Marlin/src/feature/ultimaker3/serial_protocol.cpp"),
-            "-o", str(Path(tmp) / "serial_protocol.o"),
-        ], check=True)
-    print("UM3 transport compiles for ATmega2560 (object only; no firmware image)")
+        sources = sorted((ROOT / "Marlin/src/feature/ultimaker3").glob("*.cpp"))
+        if not sources:
+            raise ValueError("No UM3 component sources found")
+        for source in sources:
+            subprocess.run([
+                str(compiler), "-mmcu=atmega2560", "-DF_CPU=16000000L", "-DUM3_COMPATIBILITY",
+                "-std=gnu++11", "-Os", "-Wall", "-Wextra", "-Werror", "-fstack-usage", "-c",
+                str(source), "-o", str(Path(tmp) / (source.stem + ".o")),
+            ], check=True)
+    print(f"{len(sources)} UM3 components compile for ATmega2560 (objects only; no firmware image)")
 
 
 def build_report(core, environment, output):
@@ -235,7 +240,7 @@ def main():
     vendor = sub.add_parser("audit-vendor")
     vendor.add_argument("git_dir", type=Path)
     sub.add_parser("check-release")
-    avr = sub.add_parser("avr-protocol")
+    avr = sub.add_parser("avr-components", aliases=["avr-protocol"])
     avr.add_argument("--core", type=Path, default=Path(os.environ.get("PLATFORMIO_CORE_DIR", Path.home() / ".platformio")))
     report = sub.add_parser("build-report")
     report.add_argument("--core", type=Path, required=True)
@@ -256,8 +261,8 @@ def main():
             check_release()
             print("UM3 release inventory is qualified")
             return
-        elif args.command == "avr-protocol":
-            avr_protocol(args.core)
+        elif args.command in ("avr-components", "avr-protocol"):
+            avr_components(args.core)
             return
         else:
             result = build_report(args.core, args.environment, args.output)

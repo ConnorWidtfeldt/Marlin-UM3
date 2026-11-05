@@ -100,6 +100,10 @@
       "sha256": "9a60748949d154288dfcd4a5064bf3e52117b0480d714f16c7da3bb41ceec9a1",
       "size": 5578
     },
+    "usr/bin/jedi-marlin-simulator": {
+      "sha256": "bcbf7de08b16ad0c8c38b5a182a1b85ed49c81f87459f088d30fa385587965ee",
+      "size": 328680
+    },
     "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py": {
       "sha256": "82a1260e48632c777ba5409185adf8ce635c58652c5fefa689bf54f1f462e459",
       "size": 4650

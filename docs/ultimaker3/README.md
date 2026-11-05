@@ -1,17 +1,19 @@
 # UM3 Extended port status
 
 **Development branch; not a drop-in firmware replacement.** The linked vendor
-source is incomplete. The verified wire decoder is implemented, but it is not
-connected to Marlin's command queue or hardware. The `um3_extended` environment
+source is incomplete. The wire decoder and recovered temperature, PID,
+interlock, power-budget and coordinate helpers are implemented and tested in
+isolation. They are not connected to Marlin's command queue or hardware. The `um3_extended` environment
 deliberately stops with `UM3_RELEASE_BLOCKED` before producing an image.
 
 The first source-readiness milestone found missing temperature, motion, probe
 and safety implementations. See [compatibility.md](compatibility.md),
 [hardware.md](hardware.md), and the exhaustive command/subsystem
-[inventory.json](inventory.json). A complete UM3 source release corresponding to
-the stock `jedi-marlin` **2019.01.27** package, especially the files identified in
-[vendor-baseline.json](vendor-baseline.json), is needed to resolve those gaps.
-S-line implementations are comparison evidence only.
+[inventory.json](inventory.json). [Binary recovery](recovery.md) now reconstructs
+selected missing behavior from the shipped `jedi-marlin` **2019.01.27** binaries.
+The hardware drivers, timer/output safety paths, full probing algorithm and modern
+Marlin integration remain unresolved. S-line source is used only where independently
+corroborated; original source would still help resolve the remaining gaps.
 
 An [actual build with the documented Arduino 1.0.5 compiler](vendor-build.md)
 confirms that the published tree fails compilation; the same toolchain
@@ -33,8 +35,12 @@ python3 -m venv .venv-um3
 python -m pip install -r buildroot/share/ultimaker3/requirements.txt
 python buildroot/tests/um3/test_evidence.py
 python buildroot/tests/um3/run.py
+python buildroot/tests/um3/run_thermal.py
+python buildroot/tests/um3/run_interlock.py
+python buildroot/tests/um3/run_motion.py
+python buildroot/tests/um3/run_power.py
 pio run -e um3_upstream_check
-python buildroot/share/ultimaker3/verify.py avr-protocol --core "${PLATFORMIO_CORE_DIR:-$HOME/.platformio}"
+python buildroot/share/ultimaker3/verify.py avr-components --core "${PLATFORMIO_CORE_DIR:-$HOME/.platformio}"
 python buildroot/share/ultimaker3/verify.py check-release
 ```
 
@@ -44,8 +50,9 @@ are exercised in CI; they do not count as a successful UM3 firmware build.
 
 `um3_upstream_check` builds the unchanged default Marlin RAMPS configuration for
 an ATmega2560. Its image is exclusively an upstream regression artifact and
-**must not be installed on an Ultimaker**. `avr-protocol` compiles the actual
-decoder for ATmega2560 to a temporary object, without linking a firmware image.
+**must not be installed on an Ultimaker**. `avr-components` compiles all isolated
+UM3 production modules for ATmega2560 to temporary objects, without linking a
+firmware image. `avr-protocol` remains an alias for existing callers.
 
 Generate the regression HEX, ELF, map, size report, checksums and provenance:
 

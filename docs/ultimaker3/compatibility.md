@@ -4,6 +4,11 @@ This is an evidence inventory, **not a completed or flashable port**. Entries ma
 `upstream_candidate` still need comparison and tests; they do not establish
 compatibility. The machine-readable inventory is [inventory.json](inventory.json).
 
+[Binary recovery](recovery.md) now supplies tested temperature/PID, interlock,
+power and coordinate components. The source-completeness section below records
+the original vendor gaps; these components close only the isolated math/state
+entries. Acquisition, output safety, commands and motion integration remain open.
+
 ## Pinned evidence
 
 - Modern base: Marlin 2.1.2.9, `7d300b42acadb3e7467e9f4b4fc03ebea592c2d0`.

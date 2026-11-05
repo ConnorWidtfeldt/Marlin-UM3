@@ -28,7 +28,8 @@
       "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex": "9a60748949d154288dfcd4a5064bf3e52117b0480d714f16c7da3bb41ceec9a1",
       "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/firmwareUpdateBase.py": "5422e6f18c07f2594c071a170510ec2d534ffcd881efb82e8d0a9bbdffb5871b",
       "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py": "82a1260e48632c777ba5409185adf8ce635c58652c5fefa689bf54f1f462e459",
-      "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json": "73b24db97eb38e8af324af30069b5cef0be68321f40154334eaf0975df223cf5"
+      "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json": "73b24db97eb38e8af324af30069b5cef0be68321f40154334eaf0975df223cf5",
+      "usr/bin/jedi-marlin-simulator": "bcbf7de08b16ad0c8c38b5a182a1b85ed49c81f87459f088d30fa385587965ee"
     }
   },
   "host_defaults": {
@@ -174,7 +175,7 @@
       "id": "source_completeness",
       "status": "blocked",
       "required": true,
-      "reason": "Confirmed by an unmodified source build using official Arduino 1.0.5 AVR GCC 4.3.2: configuration and Blink control pass, but UM3 compilation fails on missing or conflicting thermal, planner, pin and probe interfaces. Supplying the existing default MOTHERBOARD=72 removes an include-order error without resolving those interfaces.",
+      "reason": "The published source does not compile even with Arduino 1.0.5. Binary recovery reconstructs selected missing calculations and state machines, but not the complete temperature engine, peripherals, probe or modern queue/planner bindings. Account for every missing behavior with authoritative source or corroborated reconstruction before release.",
       "evidence": [
         "docs/ultimaker3/vendor-build.md",
         "docs/ultimaker3/vendor-build.json",
@@ -183,7 +184,8 @@
         "vendor:Marlin/pins.h",
         "vendor:Marlin/temperature.cpp",
         "vendor:Marlin/planner.cpp",
-        "vendor:Marlin/stepper.cpp"
+        "vendor:Marlin/stepper.cpp",
+        "docs/ultimaker3/recovery.md"
       ]
     },
     {
@@ -229,24 +231,26 @@
       "id": "thermal_conversion",
       "status": "blocked",
       "required": true,
-      "reason": "Added ADS101X reads differential signed 12-bit samples at +/-0.256 V full scale; stale temperature core and table 20 implement the UM2 INA826 path. Exact stock UM3 acquisition channel, conversion, calibration application, saturation and fault behavior remain unresolved.",
+      "reason": "Exact stock tables, factor-8 conversion and compensation math are implemented and tested separately. Board/channel selection, reference calibration, acquisition freshness, saturation and sensor-fault integration remain unimplemented.",
       "evidence": [
         "vendor:Marlin/temperature_ADS101X.cpp",
         "vendor:Marlin/temperature.cpp",
         "vendor:Marlin/thermistortables.h",
-        "usr/share/griffin/griffin/machines/um3.json"
+        "usr/share/griffin/griffin/machines/um3.json",
+        "docs/ultimaker3/recovery.md"
       ]
     },
     {
       "id": "thermal_control",
       "status": "blocked",
       "required": true,
-      "reason": "Main requires undefined per-hotend PID, power-budget, presence and removal-state objects. Recover control cadence and apply budget/interlocks to every output path; stock host PID defaults alone do not establish runtime behavior.",
+      "reason": "PID math, removal allowance, progress-watchdog state and power budgeting are recovered and independently tested. ISR cadence, actual sensor/presence acquisition, every heater-output safety gate and modern thermal protection integration remain unimplemented.",
       "evidence": [
         "vendor:Marlin/temperature.h",
         "vendor:Marlin/temperaturePID.cpp",
         "vendor:Marlin/PowerBudgetManagement.cpp",
-        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py"
+        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
+        "docs/ultimaker3/recovery.md"
       ]
     },
     {
@@ -266,24 +270,26 @@
       "id": "motion",
       "status": "blocked",
       "required": true,
-      "reason": "Missing planner-space, interrupt and runtime direction interfaces; negative rounded per-tool XYZ offsets are stored in steps but retained planner does not implement those semantics. Verify logical vs physical motion, homing, limits, timing and actual-position responses.",
+      "reason": "Planner-credit, negative rounded tool-offset and executed-step coordinate helpers are recovered. Modern planner/stepper integration, interrupt ordering, runtime directions, homing and travel-limit enforcement remain unimplemented.",
       "evidence": [
         "vendor:Marlin/Marlin_main.cpp",
         "vendor:Marlin/planner.cpp",
         "vendor:Marlin/stepper.cpp",
-        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py"
+        "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
+        "docs/ultimaker3/recovery.md"
       ]
     },
     {
       "id": "probe",
       "status": "blocked",
       "required": true,
-      "reason": "Capacitive algorithm constants are missing from UM3 configuration. Host probe procedure does not establish AVR sample/filter thresholds, step sampling and stop latency.",
+      "reason": "Shipped simulator instructions corroborate the missing capacitive probe constants and buffers. Full algorithm, I2C acquisition, cadence, abort/stop behavior, numeric parity and host result sequence remain unimplemented.",
       "evidence": [
         "vendor:Marlin/cap_sense_probe.cpp",
         "vendor:Marlin/i2c_capacitance_FDC1004.cpp",
         "vendor:Marlin/Configuration.h",
-        "usr/share/griffin/griffin/machines/um3.json"
+        "usr/share/griffin/griffin/machines/um3.json",
+        "docs/ultimaker3/recovery.md"
       ]
     },
     {
@@ -406,7 +412,7 @@
       "id": "commands_probe",
       "status": "blocked",
       "required": true,
-      "reason": "Capacitive probing constants and motion/sampling integration remain unresolved.",
+      "reason": "Capacitive probe constants are recovered, but command/result formatting and motion/sampling/abort integration remain unimplemented.",
       "evidence": [
         "vendor:Marlin/Marlin_main.cpp"
       ],
@@ -531,7 +537,7 @@
       "id": "commands_temperature_compensation",
       "status": "blocked",
       "required": true,
-      "reason": "Host sends measured*factor+offset parameters, but stale thermal engine never applies them.",
+      "reason": "Measured*factor+offset calculation is implemented and tested. Host M12005/M12006 runtime setters and application to every acquired temperature and safety threshold remain unimplemented.",
       "evidence": [
         "vendor:Marlin/Marlin_main.cpp"
       ],
@@ -554,6 +560,76 @@
         "M12010"
       ],
       "disposition": "unimplemented"
+    },
+    {
+      "id": "temperature_math",
+      "status": "implemented_verified",
+      "required": true,
+      "reason": "Signed tables exactly match both shipped binaries. Conversion/compensation passes 86 ARM instruction-replay outputs plus boundary and invalid-input tests; AVR object compile passes. Acquisition and fault handling are separate gates.",
+      "evidence": [
+        "Marlin/src/feature/ultimaker3/temperature_conversion.cpp",
+        "buildroot/tests/um3/test_thermal.cpp",
+        "buildroot/tests/um3/run_thermal.py",
+        "buildroot/tests/um3/stock_oracle.json",
+        "docs/ultimaker3/recovery-thermal.md",
+        "docs/ultimaker3/recovery.json"
+      ]
+    },
+    {
+      "id": "pid_math",
+      "status": "implemented_verified",
+      "required": true,
+      "reason": "Recovered sample interval, gains, state and clipping pass 177 ARM instruction-replay outputs plus invalid-input tests; AVR object compile passes. No heater output is driven and exact cross-architecture rounding is not established.",
+      "evidence": [
+        "Marlin/src/feature/ultimaker3/temperature_pid.cpp",
+        "buildroot/tests/um3/test_thermal.cpp",
+        "buildroot/tests/um3/run_thermal.py",
+        "buildroot/tests/um3/stock_oracle.json",
+        "docs/ultimaker3/recovery-thermal.md",
+        "docs/ultimaker3/recovery.json"
+      ]
+    },
+    {
+      "id": "thermal_interlocks",
+      "status": "implemented_verified",
+      "required": true,
+      "reason": "Removal requests and full-power progress watchdog match 31 ARM replay outcomes; native tests also cover thresholds, invalid values and clock wrap. The helper returns fault state; actual shutdown/latching and all output-path integration remain separate gates.",
+      "evidence": [
+        "Marlin/src/feature/ultimaker3/thermal_interlock.cpp",
+        "buildroot/tests/um3/test_interlock.cpp",
+        "buildroot/tests/um3/run_interlock.py",
+        "buildroot/tests/um3/stock_oracle.json",
+        "docs/ultimaker3/recovery-thermal.md",
+        "docs/ultimaker3/recovery.json"
+      ]
+    },
+    {
+      "id": "power_budget_math",
+      "status": "implemented_verified",
+      "required": true,
+      "reason": "Two-slot and temperature-dependent bed allocator passes 12 ARM bed replay outputs and 26880 independent allocation invariants. Explicit fail-closed validation and global slot limiting are documented defensive departures; output integration remains separate.",
+      "evidence": [
+        "Marlin/src/feature/ultimaker3/power_budget.cpp",
+        "buildroot/tests/um3/test_power_budget.cpp",
+        "buildroot/tests/um3/run_power.py",
+        "buildroot/tests/um3/stock_oracle.json",
+        "docs/ultimaker3/recovery-power.md",
+        "docs/ultimaker3/recovery.json"
+      ]
+    },
+    {
+      "id": "motion_contracts",
+      "status": "implemented_verified",
+      "required": true,
+      "reason": "Shipped instructions establish planner ring capacity, signed rounded tool offsets and executed-step reconstruction. Native boundary/overflow tests and AVR compile pass. ROM defaults match AVR bytes; live planner, homing and probing remain separate gates.",
+      "evidence": [
+        "Marlin/src/feature/ultimaker3/motion_contract.cpp",
+        "buildroot/tests/um3/test_motion_contract.cpp",
+        "buildroot/tests/um3/run_motion.py",
+        "buildroot/tests/um3/stock_oracle.json",
+        "docs/ultimaker3/recovery-motion.md",
+        "docs/ultimaker3/recovery.json"
+      ]
     }
   ],
   "limitations": [
