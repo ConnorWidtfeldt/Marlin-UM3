@@ -6,6 +6,12 @@ instructions can be replayed without starting Griffin or the simulator applicati
 This provides evidence for reconstruction despite the incomplete public source.
 It does not recover the original C++ source or establish physical AVR behavior.
 
+The modern target now links the full verified stock frontend and hardware/thermal
+implementation to Marlin 2.1.2.9's motion engine. See [integration.md](integration.md).
+The isolated helpers and replay experiments below describe the earlier recovery
+stage; production power/coordinate helpers are reused and the complete stock
+thermal/PID/probe paths are separately exercised by the integration harness.
+
 ## What was reconstructed
 
 | Area | Implemented production code | Evidence and verification |
@@ -15,18 +21,19 @@ It does not recover the original C++ source or establish physical AVR behavior.
 | Heater interlocks | Removal-allowance state and full-power heating-progress watchdog | 12 removal and 19 watchdog replay outcomes, plus threshold/invalid-input tests |
 | Power | Two hotend slots and temperature-dependent bed budget | Published complete power code and shipped instructions; 12 bed replay outputs and 26,880 allocation cases |
 | Motion | Planner credits, M218 offset conversion and executed-step coordinate reconstruction | Named ARM instructions, AVR ROM defaults, native boundary/overflow tests |
-| Probe | Corroborated missing constants and buffer sizes | Static instructions and data; full probe implementation remains outstanding |
+| Probe | Corroborated missing constants and buffer sizes | Static instructions and data; full algorithm is now imported; physical accuracy remains unverified |
 
 The detailed ledgers are [thermal](recovery-thermal.md), [power](recovery-power.md)
 and [motion/probe](recovery-motion.md). Each distinguishes observed behavior from
 defensive changes and unresolved integration. All modules compile for ATmega2560
-at 16 MHz. No hardware output or modern command path calls them yet.
+at 16 MHz. Their earlier isolated checks are complementary to the integrated target checks.
 The [assembly comparison](assembly-comparison.md) records the initial compiler
 experiments and subsequent exact whole-image result. The separate
 [historical reconstruction](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
 now generates the literal stock HEX, with zero differing bytes across all 77942
-addressed flash bytes. Its connected drivers, planner, probe and thermal engine
-are not yet integrated into this modern branch. The table above describes only
+addressed flash bytes. Its connected drivers, probe and thermal engine are now imported in the modern
+branch; the historical planner/stepper/arc implementations are replaced by native
+Marlin facilities. The table above describes only
 the isolated modern production modules.
 
 New API validation deliberately fails closed on invalid configuration. The power

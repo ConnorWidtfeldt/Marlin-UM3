@@ -42,7 +42,19 @@ the shipped host parses the stripped line.
 Later binary recovery found that the shipped ARM simulator's `println()` emits
 LF alone. The historical reconstruction branch restores that behavior. These
 isolated formatter fixtures retain public-source CRLF, which the host also
-strips; exact shipped output framing remains a modern transport-integration gate.
+strips. The integrated production formatter below uses and verifies shipped LF
+framing against the stock host parser.
 
-This decoder is not connected to Marlin's command queue or hardware. Passing these
+The isolated decoder test does not exercise the production command queue or
+hardware. Passing only these
 tests does not establish firmware, thermal, motion, or machine compatibility.
+
+## Integrated frontend and mocked hardware
+
+`python run_integration.py` compiles the actual UM3 frontend/protocol, thermal/PID,
+probe and core-EEPROM code with ASan/UBSan and test-only hardware/backend mocks.
+It exercises production boards 2/3 and refuses newer boards. No test HAL is used
+by PlatformIO. Add `--stock-root /path/to/usr/share/griffin` to independently
+validate every captured response with the SHA-pinned stock host parser.
+See [the integration ledger](../../../docs/ultimaker3/integration.md) for covered
+scenarios and the distinction between mocked boundaries and AVR/hardware tests.

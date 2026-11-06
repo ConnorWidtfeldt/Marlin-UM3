@@ -3,8 +3,9 @@
 This audit covers the published **1548-I mainboard**, **2012-K printhead**, and
 **2015-H capacitive electrode**. It does not establish which board revision is
 installed in the owner's printer, or verify every production revision supported
-by the vendor firmware. The UM3 build must remain blocked until revision-specific
-power/safety behavior and missing thermal integration are resolved.
+by the vendor firmware. The experimental build now preserves the binary-verified vendor revision
+handling and integrates the thermal path. Hardware release remains blocked
+until installed-board power/safety wiring is confirmed.
 
 ## Sources and method
 
@@ -77,7 +78,7 @@ assembly.
 The mapping between firmware `BOARD_REV_I` and the published 1548-I design is
 therefore **unresolved**. Do not select the PA6 output workaround from the PDF
 title alone. Obtain matching assembly/BOM/source evidence and confirm the
-installed revision before implementing that branch. The 2621B board's power
+installed revision before qualifying that branch on a physical printer. The 2621B board's power
 sequencing and pins are not covered by these schematics.
 
 ## Printhead circuitry corroborated by the schematic

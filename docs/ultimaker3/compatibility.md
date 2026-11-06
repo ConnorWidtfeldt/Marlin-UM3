@@ -1,3 +1,9 @@
+> Status update: the original audit below documents the incomplete public vendor
+> source. The historical reconstruction now exactly reproduces stock, and the
+> modern experimental UM3 image builds with that implementation connected to
+> Marlin 2.1.2.9. See [integration.md](integration.md) and the current
+> [inventory](inventory.json) for verification scope and remaining gates.
+
 # Ultimaker 3 Extended compatibility audit
 
 This is an evidence inventory, **not a completed or flashable port**. Entries marked

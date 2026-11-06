@@ -1,33 +1,16 @@
 # UM3 Extended port status
 
-**Development branch; not a drop-in firmware replacement.** The linked vendor
-source is incomplete. The wire decoder and recovered temperature, PID,
-interlock, power-budget and coordinate helpers are implemented and tested in
-isolation. They are not connected to Marlin's command queue or hardware. The `um3_extended` environment
-deliberately stops with `UM3_RELEASE_BLOCKED` before producing an image.
-
-The first source-readiness milestone found missing temperature, motion, probe
-and safety implementations. See [compatibility.md](compatibility.md),
-[hardware.md](hardware.md), and the exhaustive command/subsystem
-[inventory.json](inventory.json). [Binary recovery](recovery.md) now reconstructs
-selected missing behavior from the shipped `jedi-marlin` **2019.01.27** binaries.
-The full historical implementation has since been reproduced exactly; its
-hardware drivers, timer/output safety paths and probing algorithm still need
-integration into modern Marlin. S-line source supplied independently checked
-candidates during reconstruction.
-
-An [actual build with the documented Arduino 1.0.5 compiler](vendor-build.md)
-confirms that the published tree fails compilation; the same toolchain
-successfully builds Arduino's Blink control example. `jedi-marlin` is the vendor
-package name for this intended source project, not a separate repository.
+The dedicated `um3_extended` target now builds a complete experimental firmware
+image on Marlin **2.1.2.9**, using its current planner/stepper/arc engine and the
+verified UM3 stock host, peripheral, probe and thermal implementation.
+**Hardware acceptance remains outstanding; do not treat this as a qualified
+replacement.** See the [integration evidence and limits](integration.md) and
+[compatibility inventory](inventory.json).
 
 The separate historical [`reconstruct/um3-stock` branch](https://github.com/ConnorWidtfeldt/Marlin-UM3/tree/reconstruct/um3-stock)
-now reproduces the **exact official 5.3.0 HEX**, all 77942 flash bytes and the
-literal file, using Docker, Arduino 1.0.5 core sources and GCC 4.8.1 / Atmel 3.4.4.
-Its [comparison evidence](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
-and [build instructions](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/README.md)
-pin the complete toolchain and verify the stock digest. This establishes the
-linked stock baseline; the modern `um3_extended` release gate remains closed.
+continues to reproduce the exact official 5.3.0 HEX. Its
+[comparison report](https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md)
+is the source baseline for this port. The modern image intentionally differs.
 
 ## Reproduce the checks
 
@@ -48,30 +31,34 @@ python buildroot/tests/um3/run_thermal.py
 python buildroot/tests/um3/run_interlock.py
 python buildroot/tests/um3/run_motion.py
 python buildroot/tests/um3/run_power.py
+python buildroot/tests/um3/run_integration.py
+pio run -e um3_extended
 pio run -e um3_upstream_check
 python buildroot/share/ultimaker3/verify.py avr-components --core "${PLATFORMIO_CORE_DIR:-$HOME/.platformio}"
 python buildroot/share/ultimaker3/verify.py check-release
 ```
 
-The final command currently **must fail**. `pio run -e um3_extended` must also
-fail and must not produce `.pio/build/um3_extended/firmware.hex`. These failures
-are exercised in CI; they do not count as a successful UM3 firmware build.
+The final `check-release` command still **must fail**: release qualification
+is separate from building the experimental image. The UM3 build itself succeeds
+and produces `.pio/build/um3_extended/firmware.hex`. It does not flash a device.
 
 `um3_upstream_check` builds the unchanged default Marlin RAMPS configuration for
 an ATmega2560. Its image is exclusively an upstream regression artifact and
-**must not be installed on an Ultimaker**. `avr-components` compiles all isolated
-UM3 production modules for ATmega2560 to temporary objects, without linking a
+**must not be installed on an Ultimaker**. `avr-components` compiles the six isolated
+UM3 modules for ATmega2560 to temporary objects, without linking a
 firmware image. `avr-protocol` remains an alias for existing callers.
 
-Generate the regression HEX, ELF, map, size report, checksums and provenance:
+Package the UM3 HEX, ELF, map, size report, source hashes, checksums and provenance:
 
 ```sh
 python buildroot/share/ultimaker3/verify.py build-report \
   --core "${PLATFORMIO_CORE_DIR:-$HOME/.platformio}" \
-  --environment um3_upstream_check --output artifacts/upstream-avr-regression
+  --environment um3_extended --output artifacts/um3-extended-NOT-FOR-FLASHING
 ```
 
-The report identifies its environment and dirty-worktree state. The stock
+For the upstream regression report, select `um3_upstream_check` and a separate
+output directory. The report identifies its environment and dirty-worktree state,
+and records `hardware_release: false` and outstanding qualification blockers. The stock
 bootloader reserves 8192 bytes, so application addresses must remain below
 `0x3e000` (253952 bytes). Static SRAM is limited to 6144 bytes to reserve at least
 2048 bytes for stack and interrupts. That reserve is a conservative development
@@ -121,8 +108,8 @@ named `integrate/marlin-<tag>` from `um3`, and merge the tag with `--no-ff`.
 Resolve source and configuration changes, rerun the evidence, protocol, AVR and
 inventory checks, and review differences in the hardware and host interfaces.
 Advance `um3` and HomeFab's submodule pointer only after those checks pass. Do not
-rebase published commits or automatically merge moving bugfix branches. While
-the source gate is blocked, maintenance checks qualify development code only.
+rebase published commits or automatically merge moving bugfix branches. Until the required inventory and hardware checks are qualified, maintenance
+checks and compiled artifacts qualify development code only.
 
 ## Eventual hardware acceptance and rollback
 
@@ -149,5 +136,5 @@ After all required offline inventory entries are verified, validate in this orde
 6. Single-material and dual-material prints, cancellation, recovery and repeated restarts.
 
 No hardware tests, print-performance comparisons or stack high-water measurements
-have been performed. Successful offline builds will not by themselves establish
+have been performed. Successful offline builds and mocked checks do not establish
 electrical safety, probing latency or print quality.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "release_ready": false,
-  "scope": "Offline UM3 Extended port audit; no flashable firmware or hardware-acceptance claim",
+  "scope": "Integrated experimental UM3 Extended image; offline build/mocked verification, no hardware-acceptance claim",
   "upstream": {
     "tag": "2.1.2.9",
     "commit": "7d300b42acadb3e7467e9f4b4fc03ebea592c2d0"
@@ -173,9 +173,9 @@
   "entries": [
     {
       "id": "source_completeness",
-      "status": "blocked",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "The published tree fails compilation. The separate historical reconstruction now generates exactly the official UM3 5.3.0 HEX, all 77942 flash bytes and the literal file. Its connected drivers, planner, probing and thermal engine still require integration and verification in modern Marlin. The historical baseline is verified; modern source completeness remains blocked.",
+      "reason": "The verified stock baseline is imported and connected to the modern planner/stepper/arc facilities. The complete UM3 target links; no production stubs substitute for missing drivers.",
       "evidence": [
         "docs/ultimaker3/vendor-build.md",
         "docs/ultimaker3/vendor-build.json",
@@ -186,14 +186,17 @@
         "vendor:Marlin/planner.cpp",
         "vendor:Marlin/stepper.cpp",
         "docs/ultimaker3/recovery.md",
-        "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md"
+        "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "transport_primitive",
       "status": "implemented_verified",
       "required": true,
-      "reason": "Isolated production decoder passes stock-host-derived fixtures, ASan/UBSan boundary checks and an ATmega2560 object compile. Queue and hardware integration remain separately unimplemented.",
+      "reason": "Isolated production decoder passes stock-host-derived fixtures, ASan/UBSan boundary checks and an ATmega2560 object compile. The full production queue/formatter is covered separately by transport_integration.",
       "evidence": [
         "Marlin/src/feature/ultimaker3/serial_protocol.cpp",
         "buildroot/tests/um3/run.py",
@@ -206,160 +209,199 @@
     },
     {
       "id": "transport_integration",
-      "status": "unimplemented",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Packet receiver, 96-byte payload plus terminator storage, dispatch, asynchronous output, resend RX discard, sequence/ack timing and planner-credit reporting must integrate with the modern production queue. Shipped ARM println emits LF only; isolated public-source formatter fixtures currently use host-accepted CRLF, so exact shipped output framing remains part of this integration gate.",
+      "reason": "Production stock framing/queue/formatter passes corrupt packets, fragmentation, resends, saturation, 96-byte payloads and wraparound. The pinned stock host parser accepts every captured response for boards 2 and 3; native ASCII/emergency parsing does not consume the stream.",
       "evidence": [
         "usr/share/griffin/griffin/printer/drivers/marlin/transportLayer.py",
         "vendor:Marlin/SerialProtocol.cpp",
         "vendor:Marlin/MarlinSerial.cpp",
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "board_pins",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Schematic audit corroborates stock signals, USART2 and printhead peripherals, but firmware BOARD_REV_I assumptions differ from the published 1548-I divider/safety circuit. Exact production revision mapping and assembly remain unresolved; do not enable outputs from the title alone.",
+      "reason": "Dedicated stock pin map and runtime board IDs 2/3 are implemented, with timer ownership explicit and newer/unknown boards refused. The published revision-I schematic/assembly mismatch and installed revision still require physical confirmation.",
       "evidence": [
         "docs/ultimaker3/hardware.md",
         "vendor:Marlin/Board.cpp",
         "vendor:Marlin/pins.h",
-        "https://github.com/Ultimaker/Ultimaker3/tree/master/PCB%20files"
+        "https://github.com/Ultimaker/Ultimaker3/tree/master/PCB%20files",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "thermal_conversion",
-      "status": "blocked",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Exact stock tables, factor-8 conversion and compensation math are implemented and tested separately. Board/channel selection, reference calibration, acquisition freshness, saturation and sensor-fault integration remain unimplemented.",
+      "reason": "The real stock ADS1015/bed conversion and compensation paths are ported and exercised with mocked ADC/TWI inputs; signed tables and isolated math retain binary-backed fixtures.",
       "evidence": [
         "vendor:Marlin/temperature_ADS101X.cpp",
         "vendor:Marlin/temperature.cpp",
         "vendor:Marlin/thermistortables.h",
         "usr/share/griffin/griffin/machines/um3.json",
-        "docs/ultimaker3/recovery.md"
+        "docs/ultimaker3/recovery.md",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "thermal_control",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "PID math, removal allowance, progress-watchdog state and power budgeting are recovered and independently tested. ISR cadence, actual sensor/presence acquisition, every heater-output safety gate and modern thermal protection integration remain unimplemented.",
+      "reason": "Stock controller, cadence, bounded power allocation, removal handling and PWM outputs are connected; mocked heating/shutdown tests pass. Native additional heating-watch/runaway integration compiles but its full AVR timing and combined-heater behavior remain unqualified.",
       "evidence": [
         "vendor:Marlin/temperature.h",
         "vendor:Marlin/temperaturePID.cpp",
         "vendor:Marlin/PowerBudgetManagement.cpp",
         "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
-        "docs/ultimaker3/recovery.md"
+        "docs/ultimaker3/recovery.md",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "safety",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Board revision I uses safety-pin output sequencing; Stop.h and stale Marlin.h reason definitions conflict. Verify relay, sensor faults, endstops, watchdog, timeout and recovery behavior for stock hardware.",
+      "reason": "Latched faults cut power, detach all heater PWM and abort motion. Mocked removal, ADC errors, stale acquisition, unsafe M42 writes and recovery pass. Physical watchdog expiry, IRQ timing, safety input and relay wiring require qualification.",
       "evidence": [
         "vendor:Marlin/Board.cpp",
         "vendor:Marlin/Stop.cpp",
         "vendor:Marlin/Stop.h",
         "vendor:Marlin/Marlin.h",
-        "vendor:Marlin/watchdog.cpp"
+        "vendor:Marlin/watchdog.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "motion",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Planner-credit, negative rounded tool-offset and executed-step coordinate helpers are recovered. Modern planner/stepper integration, interrupt ordering, runtime directions, homing and travel-limit enforcement remain unimplemented.",
+      "reason": "Stock host motion/homing interfaces use native Marlin planner, stepper and arc engines. Step quantization, offsets, jerk units and runtime calibration are preserved and tested at boundaries. Live ISR/homing/arc timing and motor motion remain unverified.",
       "evidence": [
         "vendor:Marlin/Marlin_main.cpp",
         "vendor:Marlin/planner.cpp",
         "vendor:Marlin/stepper.cpp",
         "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
-        "docs/ultimaker3/recovery.md"
+        "docs/ultimaker3/recovery.md",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "probe",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Shipped simulator instructions corroborate the missing capacitive probe constants and buffers. Full algorithm, I2C acquisition, cadence, abort/stop behavior, numeric parity and host result sequence remain unimplemented.",
+      "reason": "The complete binary-verified capacitive algorithm and FDC1004 driver are ported. Sampling/noise commands and missing-sensor abort execute in tests; successful contact detection, reported height and timing with the new engine remain unqualified.",
       "evidence": [
         "vendor:Marlin/cap_sense_probe.cpp",
         "vendor:Marlin/i2c_capacitance_FDC1004.cpp",
         "vendor:Marlin/Configuration.h",
         "usr/share/griffin/griffin/machines/um3.json",
-        "docs/ultimaker3/recovery.md"
+        "docs/ultimaker3/recovery.md",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "print_core_eeprom",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Preserve DS2482/DS2431 serial and EEPROM read/write behavior, validation, returned hex formatting, presence and removal policy.",
+      "reason": "The stock DS2482/DS2431 implementation is ported. Production serial/page-read commands pass mocked-device tests. Full write/readback, bus-failure and physical core transactions remain unqualified.",
       "evidence": [
         "vendor:Marlin/i2c_onewire_ds2482.cpp",
         "vendor:Marlin/oneWireDS2431_eeprom.cpp",
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "i2c_fans_lighting",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Port nonblocking I2C priorities, communication failures, PCA9635/PCA9632 lighting and fan behavior without interrupt or timer ownership conflicts.",
+      "reason": "Stock priority TWI, fan and lighting drivers are compiled and connected, retaining timer/pin ownership. Startup/control paths execute under mocks; physical bus cadence, fan/lighting outputs and recovery need qualification.",
       "evidence": [
         "vendor:Marlin/i2c_driver.cpp",
         "vendor:Marlin/fan_driver.cpp",
         "vendor:Marlin/pca9635_driver.cpp",
-        "vendor:Marlin/led_rgbw_pca9632.cpp"
+        "vendor:Marlin/led_rgbw_pca9632.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "host_runtime_configuration",
-      "status": "unimplemented",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "On connect stock host sends M115/M80 then forces all property links. Preserve host-owned calibration, geometry, settings and temperature coefficients; no modern EEPROM override.",
+      "reason": "Production host sequences verify geometry, steps/mm, directions, milliamps, tool offsets, PID/power and compensation through the adapter. Host ownership is retained; no Marlin EEPROM settings are loaded.",
       "evidence": [
         "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
         "usr/share/griffin/griffin/printer/drivers/marlin/osiHelpers/propertyLink.py",
         "usr/share/griffin/griffin/machines/um3.json",
-        "usr/share/griffin/griffin/machines/9511.json"
+        "usr/share/griffin/griffin/machines/9511.json",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "updater_compatibility",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Stock startup verifies and may overwrite MCU firmware from configured jedi.hex. Installation must preserve backup/calibration and replace the configured image; document stock update rollback behavior and verify image layout.",
+      "reason": "The stock build prefix and host contract are retained and bootloader addresses are protected. The updater was statically inspected; actual installation/reboot replacement and rollback are not exercised.",
       "evidence": [
         "usr/share/griffin/griffin/machines/um3.json",
         "usr/share/griffin/griffin/printer/procedures/initialization/initiateHardwareInitialization.py",
         "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/firmwareUpdateBase.py",
-        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py"
+        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/avr/multi/multiStageProgrammer.py",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "avr_build_memory",
-      "status": "unimplemented",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Dedicated target must compile with verified pins/sensors, reserve application flash below 0x3e000, report SRAM with stack/interrupt headroom, and emit identified artifacts. Upstream smoke build is insufficient.",
+      "reason": "The complete UM3 target builds with pinned dependencies on macOS and Linux. Build reports record the exact linked sizes and reserve. PlatformIO enforces a 253952-byte application limit and 6144-byte static SRAM development limit; stack high-water is unmeasured.",
       "evidence": [
         "vendor:Marlin/CMakeLists.txt",
         "lib/firmware/avr/bootloader/bootloader-atmega2560-uart250000-2.hex",
-        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json"
+        "usr/lib/python3/dist-packages/ucFirmwareUpgrade/common/chipDB.json",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
       "id": "offline_acceptance",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Run stock-host-derived initialization, calibration, probing, heating, tool change, stop and recovery scenarios against production compatibility code and mocked hardware; every required inventory row must be verified.",
+      "reason": "The production integration harness passes initialization, calibration, reads, heating/interlocks, cancellation/recovery and failure scenarios with mocked hardware. The native backend is compiled, not instruction-emulated; successful probing, real homing/arc and modern thermal fault timing remain acceptance gaps.",
       "evidence": [
         "usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py",
         "usr/share/griffin/griffin/machines/um3.json",
-        "usr/share/griffin/griffin/machines/9511.json"
+        "usr/share/griffin/griffin/machines/9511.json",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ]
     },
     {
@@ -373,11 +415,14 @@
     },
     {
       "id": "commands_motion_core",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Modern equivalents exist; compare legacy units, parameters, homing/error behavior, flow factors, offsets and coordinate ownership before accepting.",
+      "reason": "Stock command meanings and native adapter are connected. Calibration, linear moves, offsets, quick-stop and missing/stuck homing scenarios pass boundary mocks. Full native arc/ISR and successful physical homing behavior remain unqualified.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "G0",
@@ -407,15 +452,18 @@
         "M400",
         "Tn"
       ],
-      "disposition": "upstream_candidate"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_probe",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Capacitive probe constants are recovered, but command/result formatting and motion/sampling/abort integration remain unimplemented.",
+      "reason": "G30/G31 and M310-M314 use the recovered algorithm/drivers. M310/M311 and G30 sensor-failure paths execute; normal contact acquisition and resulting motion require further validation.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "G30",
@@ -426,15 +474,18 @@
         "M313",
         "M314"
       ],
-      "disposition": "blocked"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_power_and_safety",
-      "status": "blocked",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Thermal, relay, removal and safety integration are unresolved; preserve extended status, power/PID/current units and error mapping.",
+      "reason": "Stock handlers, bounded allocation, PID, current units, removal permission, power and restart are connected and exercised. Native thermal protection fault timing and physical outputs remain unqualified.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M80",
@@ -454,15 +505,18 @@
         "M998",
         "M999"
       ],
-      "disposition": "blocked"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_peripherals",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Pin protection, fan/light controllers and print-core EEPROM interfaces need dedicated verified handlers.",
+      "reason": "Stock print-core/fan/lighting handlers are connected. Serial/page reads execute in fixtures; complete EEPROM writeback and physical channel behavior remain unqualified.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M42",
@@ -474,42 +528,51 @@
         "M150",
         "M151"
       ],
-      "disposition": "unimplemented"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_status",
-      "status": "unimplemented",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Exact response fields and startup identification need comparison with stock host parsing.",
+      "reason": "Stock M105/M114/M115 formats and unexpected-endstop position logs are retained. Startup/identity, all captured protocol responses and temperature/core-presence/target reports pass the pinned stock host parsers. Build identification remains in the vector-prefix and M115 BUILD field.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M114",
         "M115"
       ],
-      "disposition": "unimplemented"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_quickstop",
-      "status": "blocked",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Vendor aborts planned motion and returns real positions; modern Marlin M401 deploys a probe.",
+      "reason": "Stock M401 invokes native quick-stop, then reconstructs logical coordinates from executed steps with signed offsets. Production mocked position recovery and overflow contracts pass; native cleanup introduces an approximately one-second delay within the host 20-second receive timeout.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M401"
       ],
-      "disposition": "blocked"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_flow",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Stock UM3 has no flow sensor; M405 disable still comes from host property links. Other maintenance commands require audit before declaring not applicable.",
+      "reason": "Stock no-flow default and M405 S0 are retained. Production newer-board/flow hardware is not selected; remaining diagnostic commands are not qualified on the stock target.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M405",
@@ -517,50 +580,59 @@
         "M407",
         "M408"
       ],
-      "disposition": "unimplemented"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_runtime_geometry",
-      "status": "blocked",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Host runtime movement bounds/directions must affect planner, stepper and homing consistently.",
+      "reason": "M12000/M12001/M12004 are the stock handlers. Production mocked sequences verify Extended Z=310, calibrated Z=400 steps/mm and both extruder direction settings; native hooks apply runtime settings.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M12000",
         "M12001",
         "M12004"
       ],
-      "disposition": "blocked"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_temperature_compensation",
-      "status": "blocked",
+      "status": "implemented_verified",
       "required": true,
-      "reason": "Measured*factor+offset calculation is implemented and tested. Host M12005/M12006 runtime setters and application to every acquired temperature and safety threshold remain unimplemented.",
+      "reason": "Stock M12005/M12006 setters feed the acquired temperatures; the integrated harness verifies compensation in the live thermal path and isolated conversion fixtures remain in place.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M12005",
         "M12006"
       ],
-      "disposition": "blocked"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "commands_board_debug",
-      "status": "unimplemented",
+      "status": "implemented_unverified",
       "required": true,
-      "reason": "Verify board-ID responses; TMC2130 register access is only for non-stock/newer boards and must not initialize stock outputs.",
+      "reason": "Board reporting is implemented and both production IDs plus newer-board refusal pass tests. TMC debug cannot initialize an unsupported board through this target; installed revision mapping needs physical confirmation.",
       "evidence": [
-        "vendor:Marlin/Marlin_main.cpp"
+        "vendor:Marlin/Marlin_main.cpp",
+        "docs/ultimaker3/integration.md",
+        "buildroot/tests/um3/run_integration.py",
+        "Marlin/src/feature/ultimaker3/native_adapter.cpp"
       ],
       "commands": [
         "M12003",
         "M12010"
       ],
-      "disposition": "unimplemented"
+      "disposition": "ported; qualification scope in reason"
     },
     {
       "id": "temperature_math",
@@ -634,10 +706,10 @@
     }
   ],
   "limitations": [
-    "Static package/source inspection only; no stock firmware execution or physical printer testing.",
-    "SHA-256 pins inspected package bytes but does not independently verify vendor signature.",
-    "Candidate upstream command implementations are not verified UM3 compatibility.",
-    "Host defaults do not resolve AVR thermal conversion, timing, pin maps or safety logic."
+    "Full UM3 image compiles and production frontend/drivers run with mocked boundaries; AVR instructions, interrupt latency and physical printer behavior are not executed by these tests.",
+    "SHA-256 pins the inspected package but does not independently verify its vendor signature.",
+    "Valid capacitive contact, live homing/arc/thermal fault timing, EEPROM writeback and physical board revision mapping remain unqualified.",
+    "Additional native thermal protections and modern quick-stop timing need printer validation; static SRAM reserve is not a measured stack bound."
   ],
   "historical_baseline": {
     "commit": "7a80a3bb615362f513e1608447a6eb92efa35098",
@@ -647,5 +719,15 @@
     "flash_bytes": 77942,
     "evidence": "https://github.com/ConnorWidtfeldt/Marlin-UM3/blob/7a80a3bb615362f513e1608447a6eb92efa35098/reconstruction/binary-equivalence.md",
     "scope": "Linked stock UM3 configuration only; modern integration and hardware acceptance remain unqualified."
+  },
+  "integrated_build": {
+    "upstream_tag": "2.1.2.9",
+    "environment": "um3_extended",
+    "mcu": "atmega2560",
+    "clock_hz": 16000000,
+    "experimental": true,
+    "hardware_release": false,
+    "evidence": "docs/ultimaker3/integration.md",
+    "source_commit": "Recorded per artifact in provenance.json; see the um3 branch history for focused implementation commits."
   }
 }
