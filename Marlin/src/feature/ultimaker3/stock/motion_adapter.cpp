@@ -6,6 +6,7 @@
 #include "watchdog.h"
 #include "temperature.h"
 #include "SerialProtocol.h"
+#include "fan_driver.h"
 #include "../motion_contract.h"
 namespace um3_stock {
 uint32_t minsegmenttime=DEFAULT_MINSEGMENTTIME;
@@ -78,3 +79,16 @@ extern "C" void um3_stock_stop(uint8_t reason) { um3_stock::stop(reason); }
 extern "C" void um3_stock_read_commands();
 
 extern "C" bool um3_stock_is_stopped() { return um3_stock::isStopped(); }
+
+extern "C" uint8_t um3_stock_target_fan_speed() { return um3_stock::target_fan_speed; }
+extern "C" void um3_stock_apply_cooling_fan(uint8_t speed) {
+  static uint32_t kick_end=0;
+  static bool running=false;
+  const uint32_t now=millis();
+  if(speed) {
+    if(!running) { kick_end=now+FAN_KICKSTART_TIME; running=true; }
+    if(int32_t(kick_end-now)>0) speed=255;
+  }
+  else running=false;
+  um3_stock::setCoolingFanSpeed(speed);
+}

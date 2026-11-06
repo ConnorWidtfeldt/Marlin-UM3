@@ -1330,6 +1330,10 @@ void Planner::recalculate(TERN_(HINTS_SAFE_EXIT_SPEED, const_float_t safe_exit_s
  * Maintain fans, paste extruder pressure, spindle/laser power
  */
 void Planner::check_axes_activity() {
+  #if ENABLED(UM3_COMPATIBILITY)
+    um3_stock_apply_cooling_fan(has_blocks_queued() ? block_buffer[block_buffer_tail].um3_fan_speed : um3_stock_target_fan_speed());
+  #endif
+
 
   #if HAS_DISABLE_AXES
     xyze_bool_t axis_active = { false };
@@ -2256,6 +2260,9 @@ bool Planner::_populate_block(
   #if HAS_FAN
     FANS_LOOP(i) block->fan_speed[i] = thermalManager.fan_speed[i];
   #endif
+  #if ENABLED(UM3_COMPATIBILITY)
+    block->um3_fan_speed=um3_stock_target_fan_speed();
+  #endif
 
   #if ENABLED(BARICUDA)
     block->valve_pressure = baricuda_valve_pressure;
@@ -2973,6 +2980,9 @@ void Planner::buffer_sync_block(const BlockFlagBit sync_flag/*=BLOCK_BIT_SYNC_PO
   // Clear block
   block->reset();
   block->flag.apply(sync_flag);
+  #if ENABLED(UM3_COMPATIBILITY)
+    block->um3_fan_speed=um3_stock_target_fan_speed();
+  #endif
 
   block->position = position;
   #if ENABLED(BACKLASH_COMPENSATION)

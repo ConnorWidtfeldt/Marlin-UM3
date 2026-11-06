@@ -257,6 +257,9 @@ typedef struct PlannerBlock {
     cutter_power_t cutter_power;            // Power level for Spindle, Laser, etc.
   #endif
 
+  #if ENABLED(UM3_COMPATIBILITY)
+    uint8_t um3_fan_speed; // Preserve part-cooling changes in motion order.
+  #endif
   #if HAS_FAN
     uint8_t fan_speed[FAN_COUNT];
   #endif

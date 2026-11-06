@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """Exercise the production UM3 frontend/drivers with mocked hardware and motion."""
+import ast
+import hashlib
+import logging
+import types
+import warnings
 import argparse
 import json
 import re
@@ -40,4 +45,30 @@ with tempfile.TemporaryDirectory(prefix='um3-integration-') as directory:
             for response in responses:
                 parsed=parser.parseMarlinResponse(response)
                 assert parsed and parsed.valid, response
+            # Execute only the pinned host's temperature parser method, with local signal/log sinks.
+            application=args.stock_root/'griffin/printer/drivers/marlin/applicationLayer.py'
+            inventory=json.loads((ROOT/'docs/ultimaker3/inventory.json').read_text())
+            expected=inventory['host_package']['member_sha256']['usr/share/griffin/griffin/printer/drivers/marlin/applicationLayer.py']
+            assert hashlib.sha256(application.read_bytes()).hexdigest()==expected
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore",SyntaxWarning)
+                tree=ast.parse(application.read_text())
+            method=next(node for node in ast.walk(tree) if isinstance(node,ast.FunctionDef) and node.name=='__handleTemperatureReply')
+            namespace={'re':re,'log':logging.getLogger('um3-stock-temperature-parser')}
+            exec(compile(ast.Module(body=[method],type_ignores=[]),str(application),'exec'),namespace)
+            rows=[];temperatures=[];bed=[]
+            sink=types.SimpleNamespace(emit=lambda *args:None)
+            host=types.SimpleNamespace(onHotendTemperatureUpdate=types.SimpleNamespace(emit=lambda *v:temperatures.append(v)),
+                onBedTemperatureUpdate=types.SimpleNamespace(emit=lambda *v:bed.append(v)),
+                onCartridgePresentChanged=sink,onCartridgeEnabledChanged=sink,
+                ENCODE_JOBSTATE_AS_NUMBER_TABLE={'idle':0})
+            host.__hotend_count=2;host.__hotend_present=[False,False];host.__hotend_enabled=[False,False]
+            host.__data_logger=types.SimpleNamespace(addData=lambda *v:rows.append(v))
+            host.__controller=types.SimpleNamespace(getPropertyValue=lambda key:'idle',getGCodeActiveHotend=lambda:0)
+            reports=[line for line in trace.read_text().splitlines() if line.startswith(' T0:')]
+            assert reports
+            for line in reports: namespace['__handleTemperatureReply'](host,0,line)
+            assert len(temperatures)==2*len(reports) and len(bed)==len(reports)
+            assert rows[-1][1]==200 and rows[-1][6]==200 and rows[-1][11]==100
+            print(f'Board {board}: temperature/presence/target report accepted by pinned stock application parser')
             print(f'Board {board}: {len(responses)} actual firmware responses accepted by pinned stock host parser')

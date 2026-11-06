@@ -36,8 +36,8 @@
 #define HEATER_0_MAXTEMP 365
 #define HEATER_1_MAXTEMP 365
 #define BED_MAXTEMP 200
-#define HOTEND_OVERSHOOT 15
-#define BED_OVERSHOOT 10
+#define HOTEND_OVERSHOOT 0 // Monitor the same target range as the stock PID.
+#define BED_OVERSHOOT 0
 #define BANG_MAX 255
 #define PID_MAX 255
 #define MAX_BED_POWER 255

@@ -27,6 +27,8 @@ void um3_native_abort_motion();
 uint8_t um3_native_planner_free();
 bool um3_native_blocks_queued();
 void um3_native_activity();
+uint8_t um3_stock_target_fan_speed();
+void um3_stock_apply_cooling_fan(uint8_t);
 void um3_native_buffer(float x,float y,float z,float e,float speed,uint8_t tool);
 void um3_native_position(float x,float y,float z,float e);
 void um3_native_e_position(float e);

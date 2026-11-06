@@ -29,6 +29,7 @@ static std::string tx;
 static float steps_per_mm[4]={80,80,200,369};
 static int32_t executed[4]={},offsets[3][2]={};
 static std::deque<std::vector<int32_t>> moves;
+static std::deque<uint8_t> move_fans;
 namespace um3_stock { void TIMER0_COMPB_vect(); }
 unsigned long millis() { return clock_ms; }
 void mock_delay(unsigned long ms) {
@@ -46,7 +47,7 @@ void um3_native_serial_begin(uint32_t) {}
 void um3_native_serial_end() {}
 void um3_native_serial_clear_rx() { rx.clear(); }
 void um3_native_stepper_init() { for(int p:{27,31,34,37,48})mock_pins[p]=1; }
-void um3_native_synchronize() { while(!moves.empty()) { for(uint8_t a=0;a<4;a++)executed[a]=moves.front()[a];moves.pop_front(); } }
+void um3_native_synchronize() { while(!moves.empty()) { for(uint8_t a=0;a<4;a++)executed[a]=moves.front()[a];moves.pop_front();if(!move_fans.empty())move_fans.pop_front(); } }
 void um3_native_set_steps(int32_t x,int32_t y,int32_t z,int32_t e) { executed[0]=x;executed[1]=y;executed[2]=z;executed[3]=e; }
 int32_t um3_native_get_steps(uint8_t a) { return executed[a]; }
 void um3_native_set_e_steps(int32_t e) { executed[3]=e; }
@@ -56,15 +57,16 @@ void um3_native_clear_endstop_hits() {}
 bool um3_native_endstop_hit() { return endstop_hit; }
 void um3_native_disable_steppers() { for(int p:{27,31,34,37,48})mock_pins[p]=1; }
 void um3_native_enable_axis(uint8_t a,bool on) { const int pins[]={27,31,34,37,48};mock_pins[pins[a]]=!on; }
-void um3_native_quickstop() { moves.clear(); }
-void um3_native_abort_motion() { moves.clear(); }
+void um3_native_quickstop() { moves.clear();move_fans.clear(); }
+void um3_native_abort_motion() { moves.clear();move_fans.clear(); }
 uint8_t um3_native_planner_free() { return 15-moves.size(); }
 bool um3_native_blocks_queued() { return !moves.empty(); }
-void um3_native_activity() {}
+void um3_native_activity() { um3_stock_apply_cooling_fan(move_fans.empty()?um3_stock_target_fan_speed():move_fans.front()); }
 void um3_native_buffer(float x,float y,float z,float e,float,uint8_t tool) {
   float logical[]={x,y,z,e};int32_t result[4],off[3]={offsets[0][tool],offsets[1][tool],offsets[2][tool]};
   assert(ultimaker3::physical_target_steps(logical,off,steps_per_mm,result));
   moves.push_back(std::vector<int32_t>(result,result+4));
+  move_fans.push_back(um3_stock_target_fan_speed());
 }
 void um3_native_position(float x,float y,float z,float e) {
   const uint8_t t=um3_stock::active_extruder;
@@ -187,12 +189,23 @@ int main(int argc,char **argv) {
   command("T1");
   command("G92 X100 Y100 Z10 E0");
   assert(executed[0]==9440 && executed[2]==4600);
+  command("M302 S0");
   command("G1 X110 Y100 Z12 E1 F1200");
   assert(moves.back()[0]==10240 && moves.back()[2]==5400);
   executed[0]=10000;executed[1]=8000;executed[2]=5000;executed[3]=369;
   command("M401");
   assert(moves.empty());
   assert(um3_stock::current_position[0]==107 && um3_stock::current_position[2]==11);
+  output_at=tx.size();command("M114");
+  assert(tx.substr(output_at).find("X:107.00")!=std::string::npos);
+  command("M119");assert(tx.find("OPEN")!=std::string::npos);
+  command("M142 w120");assert(mock_pins[8]==120);
+  command("M42 P8 S64");assert(mock_pins[8]==64);
+  command("M106 S128");assert(um3_stock::target_fan_speed==128 && mock_pins[7]==255);
+  mock_delay(120);um3_stock::manage_inactivity();assert(mock_pins[7]==128);
+  command("G1 X108 F1200");command("M106 S200");assert(mock_pins[7]==128);
+  command("M400");assert(mock_pins[7]==200);
+  command("M107");assert(um3_stock::target_fan_speed==0 && mock_pins[7]==0);
   command("M17");assert(mock_pins[27]==0 && mock_pins[48]==0);
   command("M18");assert(mock_pins[27]==1 && mock_pins[48]==1);
   command("M17");command("M84 X");assert(mock_pins[27]==1 && mock_pins[31]==0);
@@ -222,6 +235,11 @@ int main(int argc,char **argv) {
   command("M104 T0 S200");command("M104 T1 S200");command("M140 S100");command("M80");
   for(int i=0;i<100;i++) { mock_delay(1);um3_stock::manage_heater(); }
   assert(mock_pins[2]>0 && mock_pins[3]>0 && mock_pins[4]>0 && mock_pins[24]==1);
+  output_at=tx.size();command("M105");
+  const std::string temperatures=tx.substr(output_at);
+  assert(temperatures.find(" T0:")!=std::string::npos && temperatures.find(" T1:")!=std::string::npos);
+  assert(temperatures.find("/200.0@")!=std::string::npos && temperatures.find("p1e1f65535/0")!=std::string::npos);
+  assert(temperatures.find(" B")!=std::string::npos && temperatures.find("/100.0@")!=std::string::npos);
   command("M301 T0 Pnan");
   for(int i=0;i<80;i++) { mock_delay(1);um3_stock::manage_heater(); }
   assert(mock_pins[2]==0);
@@ -237,7 +255,7 @@ int main(int argc,char **argv) {
   assert(mock_pwm[2]==0 && mock_pwm[3]==0 && mock_pwm[4]==0);
   command("M104 T0 S200");command("M80");
   for(int i=0;i<40;i++) { mock_delay(1);um3_stock::manage_heater(); }
-  assert(mock_pins[2]==0 && mock_pins[24]==0);
+  assert(mock_pins[2]==0 && mock_pins[24]==0 && um3_stock::hotend_pid[0].getTargetTemperature()==0);
   command("M999");assert(!um3_stock::isStopped());command("M104 T0 S0");command("M104 T1 S0");
   command("M144 T0");assert(um3_stock::allow_temperature_sensor_errors[0]);
   command("M145 T0");
@@ -246,11 +264,11 @@ int main(int argc,char **argv) {
   assert(um3_stock::getStoppedReason()==STOP_REASON_I2C_HEAD_COMM_ERROR);
   assert(mock_pins[2]==0 && mock_pins[3]==0 && mock_pins[4]==0);
   adc_failure=false;command("M999");
-  command("G28 X");assert(um3_stock::getStoppedReason()==STOP_REASON_XY_ENDSTOP_BROKEN_ERROR);
+  command("M80");command("G28 X");assert(um3_stock::getStoppedReason()==STOP_REASON_XY_ENDSTOP_BROKEN_ERROR);
   command("M999");endstop_hit=true;mock_pins[22]=0;
-  command("G28 X");assert(um3_stock::getStoppedReason()==STOP_REASON_XY_ENDSTOP_STUCK_ERROR);
+  command("M80");command("G28 X");assert(um3_stock::getStoppedReason()==STOP_REASON_XY_ENDSTOP_STUCK_ERROR);
   command("M999");endstop_hit=false;
-  cap_reading=0;command("G30 F48 V0");
+  command("M80");cap_reading=0;command("G30 F48 V0");
   assert(tx.find("CAPACITIVE_SENSOR_PROBLEM")!=std::string::npos && moves.empty());
   cap_reading=1000;
   // A full 96-byte command must include terminator storage and survive wraparound.
@@ -261,6 +279,9 @@ int main(int argc,char **argv) {
   const uint32_t pets=watchdog_pets;
   for(int i=0;i<300;i++) { mock_delay(1);um3_stock::manage_heater(); }
   assert(watchdog_pets==pets); // A wedged bus cannot keep the watchdog alive.
+  clock_ms=UINT32_MAX-50;
+  um3_stock_apply_cooling_fan(0);um3_stock_apply_cooling_fan(128);assert(mock_pins[7]==255);
+  clock_ms+=120;um3_stock_apply_cooling_fan(128);assert(mock_pins[7]==128);
   FILE *trace=fopen(argv[2],"wb");assert(trace);
   assert(fwrite(tx.data(),1,tx.size(),trace)==tx.size());fclose(trace);
   puts("UM3 production protocol, calibration, motion adapters, core commands, heating/interlocks, recovery and communication failure passed");
