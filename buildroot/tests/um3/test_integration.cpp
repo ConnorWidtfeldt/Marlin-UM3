@@ -5,6 +5,7 @@
 #include "crc16.h"
 #include "temperature.h"
 #include "planner.h"
+#include "stepper.h"
 #include "i2c_driver.h"
 #include "i2c_capacitance_FDC1004.h"
 #include "i2c_onewire_ds2482.h"
@@ -23,6 +24,7 @@ int mock_board_adc=447;
 static uint32_t clock_ms=0,watchdog_pets=0;
 static bool core_present[2]={true,true},adc_failure=false,adc_stall=false;
 static bool endstop_hit=false;
+static uint8_t endstop_hits=0;
 static int16_t cap_reading=1000;
 static std::deque<uint8_t> rx;
 static std::string tx;
@@ -53,8 +55,10 @@ int32_t um3_native_get_steps(uint8_t a) { return executed[a]; }
 void um3_native_set_e_steps(int32_t e) { executed[3]=e; }
 void um3_native_wake() {}
 void um3_native_endstops(bool) {}
-void um3_native_clear_endstop_hits() {}
+void um3_native_clear_endstop_hits() { endstop_hits=0; }
 bool um3_native_endstop_hit() { return endstop_hit; }
+uint8_t um3_native_endstop_hits() { return endstop_hits; }
+int32_t um3_native_triggered_steps(uint8_t axis) { return executed[axis]; }
 void um3_native_disable_steppers() { for(int p:{27,31,34,37,48})mock_pins[p]=1; }
 void um3_native_enable_axis(uint8_t a,bool on) { const int pins[]={27,31,34,37,48};mock_pins[pins[a]]=!on; }
 void um3_native_quickstop() { moves.clear();move_fans.clear(); }
@@ -157,6 +161,14 @@ int main(int argc,char **argv) {
   auto wrong=packet_for("M115",uint8_t((sequence+1)%255));
   output_at=tx.size();rx.insert(rx.end(),wrong.begin(),wrong.end());um3_stock_read_commands();
   assert(tx.substr(output_at).find("\nr")!=std::string::npos);
+  for(uint8_t invalid_length:{0,97}) {
+    const uint8_t invalid[]={0xff,0xff,sequence,invalid_length};
+    output_at=tx.size();rx.insert(rx.end(),invalid,invalid+sizeof(invalid));um3_stock_read_commands();
+    assert(tx.substr(output_at).find("\nr")!=std::string::npos);
+  }
+  const uint8_t illegal[]={0xff,0xff,sequence,1,0};
+  output_at=tx.size();rx.insert(rx.end(),illegal,illegal+sizeof(illegal));um3_stock_read_commands();
+  assert(tx.substr(output_at).find("\nr")!=std::string::npos);
   auto fragmented=packet_for("M115",sequence);
   output_at=tx.size();
   for(uint8_t b:fragmented) { rx.push_back(b);um3_stock_read_commands(); }
@@ -189,6 +201,11 @@ int main(int argc,char **argv) {
   command("T1");
   command("G92 X100 Y100 Z10 E0");
   assert(executed[0]==9440 && executed[2]==4600);
+  endstop_hits=5;output_at=tx.size();um3_stock::checkHitEndstops();
+  assert(tx.substr(output_at)=="LOG:endstops hit:  X:118.00 Z:11.50\n");
+  output_at=tx.size();um3_stock::checkHitEndstops();assert(tx.size()==output_at);
+  endstop_hits=2;um3_stock::endstops_hit_on_purpose();um3_stock::checkHitEndstops();
+  assert(tx.size()==output_at);
   command("M302 S0");
   command("G1 X110 Y100 Z12 E1 F1200");
   assert(moves.back()[0]==10240 && moves.back()[2]==5400);

@@ -20,6 +20,8 @@ void um3_native_wake();
 void um3_native_endstops(bool enable);
 void um3_native_clear_endstop_hits();
 bool um3_native_endstop_hit();
+uint8_t um3_native_endstop_hits();
+int32_t um3_native_triggered_steps(uint8_t axis);
 void um3_native_disable_steppers();
 void um3_native_enable_axis(uint8_t,bool);
 void um3_native_quickstop();

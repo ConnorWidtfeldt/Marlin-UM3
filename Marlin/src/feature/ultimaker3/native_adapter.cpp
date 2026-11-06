@@ -31,6 +31,11 @@ void um3_native_wake() { stepper.wake_up(); }
 void um3_native_endstops(bool on) { endstops.enable(on); }
 void um3_native_clear_endstop_hits() { endstops.hit_on_purpose(); }
 bool um3_native_endstop_hit() { return endstops.trigger_state()!=0; }
+uint8_t um3_native_endstop_hits() {
+  const auto state=endstops.trigger_state();
+  return (TEST(state,X_ENDSTOP)?1:0) | (TEST(state,Y_ENDSTOP)?2:0) | (TEST(state,Z_ENDSTOP)?4:0);
+}
+int32_t um3_native_triggered_steps(uint8_t axis) { return stepper.triggered_position(AxisEnum(axis)); }
 void um3_native_enable_axis(uint8_t axis,bool enable) {
   if(axis<3) { if(enable) stepper.enable_axis(AxisEnum(axis)); else stepper.disable_axis(AxisEnum(axis)); }
   else { if(enable) stepper.enable_extruder(axis-3); else stepper.disable_extruder(axis-3); }

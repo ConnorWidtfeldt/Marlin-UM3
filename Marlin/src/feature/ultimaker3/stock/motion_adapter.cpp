@@ -53,7 +53,17 @@ void st_wake_up() { um3_native_wake(); }
 void enable_endstops(bool check) { um3_native_endstops(check); }
 void endstops_hit_on_purpose() { um3_native_clear_endstop_hits(); }
 bool isEndstopHit() { return um3_native_endstop_hit(); }
-void checkHitEndstops() { um3_native_clear_endstop_hits(); }
+void checkHitEndstops() {
+  const uint8_t hits=um3_native_endstop_hits();
+  if(!hits) return;
+  SERIAL_ECHO_START;
+  SERIAL_ECHOPGM(MSG_ENDSTOPS_HIT);
+  if(hits&1) SERIAL_ECHOPAIR(" X:",float(um3_native_triggered_steps(0))/axis_steps_per_unit[0]);
+  if(hits&2) SERIAL_ECHOPAIR(" Y:",float(um3_native_triggered_steps(1))/axis_steps_per_unit[1]);
+  if(hits&4) SERIAL_ECHOPAIR(" Z:",float(um3_native_triggered_steps(2))/axis_steps_per_unit[2]);
+  SERIAL_ECHOLN("");
+  um3_native_clear_endstop_hits();
+}
 void finishAndDisableSteppers() { st_synchronize(); um3_native_disable_steppers(); }
 void quickStop() {
   um3_native_quickstop();
