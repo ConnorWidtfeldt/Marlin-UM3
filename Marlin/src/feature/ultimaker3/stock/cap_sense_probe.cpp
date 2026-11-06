@@ -111,7 +111,7 @@ static void statPushSample(struct stat_t *stat, int64_t x, int64_t y)
 }
 
 // Overload of statPushSample for lower precision data
-static void statPushSample(struct stat_t *stat, long x, long y)
+static void statPushSample(struct stat_t *stat, int32_t x, int32_t y)
 {
     statPushSample(stat, int64_t(x), int64_t(y));
 }
@@ -127,7 +127,7 @@ static void statPopSample(struct stat_t *stat, int64_t x, int64_t y)
 }
 
 // Overload of statPopSample for lower precision data
-static void statPopSample(struct stat_t *stat, long x, long y)
+static void statPopSample(struct stat_t *stat, int32_t x, int32_t y)
 {
     statPopSample(stat, int64_t(x), int64_t(y));
 }
@@ -135,7 +135,7 @@ static void statPopSample(struct stat_t *stat, long x, long y)
 static void processSample(uint16_t sample_value, float sample_z)
 {
     // sample counter, also used as abscissa data for regression
-    static long counter = -1;
+    static int32_t counter = -1;
 
     // data buffers (used as ring buffers)
     static uint16_t cbuf[SAMPLE_BUFFER_1_SIZE + SAMPLE_BUFFER_2_SIZE]; // capacitive data sample buffer
@@ -493,7 +493,7 @@ static void doTheProbing(const float start_position[], const int feedrate, const
             MSerial.print(" ");
             MSerial.print(sample_value);
             MSerial.print(" ");
-            MSerial.print((long)workPacket.inflection);
+            MSerial.print((int32_t)workPacket.inflection);
             MSerial.print(" ");
             MSerial.print(workPacket.reject_count);
             MSerial.print(" ");
@@ -599,10 +599,10 @@ void moveWithCapacitiveSensor(const int feedrate, const float move_distance)
                      current_position[E_AXIS], float(feedrate)/60, active_extruder);
 
     current_position[Z_AXIS] -= move_distance;
-    unsigned long t0 = millis();
+    uint32_t t0 = millis();
     while (blocks_queued())
     {
-        unsigned long t1 = millis();
+        uint32_t t1 = millis();
         int16_t sample_value = captureSample();
         float zf = float(st_get_position(Z_AXIS)) / axis_steps_per_unit[Z_AXIS];
 

@@ -6,3 +6,5 @@ root = env["PROJECT_DIR"]
 epoch = subprocess.check_output(["git", "show", "-s", "--format=%ct", "HEAD"], cwd=root).decode().strip()
 env["ENV"]["SOURCE_DATE_EPOCH"] = epoch
 env.Append(CCFLAGS=["-fdebug-prefix-map=" + root + "=."])
+# Include the epoch in SCons signatures so incremental builds cannot retain an older build string.
+env.Append(CPPDEFINES=[("MARLIN_SOURCE_DATE_EPOCH", epoch)])
